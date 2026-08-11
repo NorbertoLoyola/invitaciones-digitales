@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#FDEEF2">
+<title>Mi cumple dulce</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     MOTOR DE PLANTILLA — CONFIG
+     Todo el contenido editable vive en el objeto CONFIG (abajo,
+     dentro del <script>). Los estilos de acá no deberían tocarse
+     para generar una invitación nueva: sólo se edita CONFIG.
+     Variante DULCE de 0-2 años — inspirada en el FORMATO/UX de una
+     invitación vista en Instagram (@invita.digitalc): número grande
+     detrás del nombre, tarjetas con forma de "blob" orgánico,
+     corazones flotando, maripositas de adorno y RSVP doble
+     (mamá/papá). El personaje de esa referencia (Minnie Mouse) NO
+     se reproduce acá — es propiedad de Disney y no se puede vender.
+     Motivos vía emoji (💗🩷🦋✨) — sin depender de clip art con
+     licencia.
+     ============================================================ */
+
+  :root{
+    --crema: #FFF6F8;
+    --rosa-100: #FDE1E7;
+    --rosa-300: #F5AFC1;
+    --rosa-500: #E8899E;
+    --rosa-700: #C2607A;
+    --carbon: #5C4048;
+    --carbon-suave: #8C6E76;
+    color-scheme: light;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; color-scheme:light; background:var(--crema); }
+  body{
+    font-family:'Fredoka', sans-serif;
+    font-weight:500;
+    color:var(--carbon);
+    color-scheme:light;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,0.7), transparent 35%),
+      radial-gradient(circle at 88% 22%, rgba(255,255,255,0.5), transparent 40%),
+      linear-gradient(180deg, var(--crema) 0%, var(--rosa-100) 55%, var(--rosa-300) 150%);
+    background-attachment:fixed;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  h1,h2{ font-family:'Fredoka', sans-serif; font-weight:700; margin:0; }
+  .script{ font-family:'Caveat', cursive; font-weight:700; }
+
+  .wrap{ max-width:480px; margin:0 auto; position:relative; z-index:1; }
+
+  section{ padding:60px 28px; text-align:center; position:relative; z-index:1; }
+
+  .fade-up{ opacity:0; transform:translateY(22px); transition:opacity .9s ease, transform .9s ease; }
+  .fade-up.visible{ opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce){ .fade-up{ opacity:1; transform:none; transition:none; } .floatie{ display:none; } }
+
+  /* ---------- Elementos flotantes (corazones/mariposas/brillo) ---------- */
+  .floaties{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .floatie{
+    position:absolute; bottom:-12%; opacity:0; line-height:1;
+    animation-name: floatUp; animation-timing-function: ease-in; animation-iteration-count: infinite;
+  }
+  @keyframes floatUp{
+    0%{ transform:translateY(0) translateX(0) rotate(0deg); opacity:0; }
+    8%{ opacity:.65; }
+    92%{ opacity:.5; }
+    100%{ transform:translateY(-112vh) translateX(24px) rotate(14deg); opacity:0; }
+  }
+
+  /* ---------- Hero: número grande detrás del nombre ---------- */
+  #hero{ min-height:92vh; display:flex; flex-direction:column; justify-content:center; padding-top:40px; }
+  .big-num{
+    position:absolute; top:52%; left:50%; transform:translate(-50%,-52%);
+    font-family:'Fredoka', sans-serif; font-weight:700; font-size:14rem; line-height:1;
+    color:rgba(232,137,158,0.18); z-index:0; user-select:none;
+    animation:breathe 5s ease-in-out infinite;
+  }
+  @keyframes breathe{ 0%,100%{ opacity:.7; } 50%{ opacity:1; } }
+  @media (prefers-reduced-motion: reduce){ .big-num{ animation:none; opacity:.85; } }
+
+  .wing{ font-size:.9rem; opacity:.8; }
+  .subtitulo{ position:relative; z-index:1; font-size:1rem; font-weight:600; color:var(--rosa-700); margin:8px 0; }
+  .kid-name{ position:relative; z-index:1; font-family:'Caveat', cursive; font-size:4.6rem; line-height:1; color:var(--rosa-700); margin:6px 0 10px; }
+  .the-date{ position:relative; z-index:1; font-size:1rem; font-weight:600; color:var(--carbon); }
+  .scroll-hint{ position:relative; z-index:1; margin-top:50px; font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--rosa-700); opacity:.85; }
+
+  .divider{ width:50px; height:3px; border-radius:2px; background:var(--rosa-500); margin:0 auto; opacity:.6; }
+
+  /* ---------- Tarjeta "blob" orgánica ---------- */
+  .blob{
+    background:linear-gradient(160deg, var(--rosa-300), var(--rosa-500));
+    border-radius:48% 52% 45% 55% / 55% 48% 52% 45%;
+    padding:44px 30px;
+    color:#fff;
+    max-width:340px;
+    margin:0 auto;
+    box-shadow:0 18px 40px rgba(232,137,158,0.35);
+  }
+  .blob h2{ color:#fff; }
+  .blob p, .blob .cd-label{ color:rgba(255,255,255,0.9); }
+
+  /* ---------- Countdown ---------- */
+  .countdown{ display:flex; justify-content:center; gap:14px; margin-top:22px; }
+  .cd-box{ min-width:52px; }
+  .cd-num{ font-family:'Fredoka', sans-serif; font-weight:700; font-size:1.6rem; color:#fff; }
+  .cd-label{ font-size:.58rem; letter-spacing:.08em; text-transform:uppercase; }
+
+  /* ---------- Itinerario / lugar ---------- */
+  .itinerary-item{ display:flex; align-items:flex-start; gap:16px; text-align:left; max-width:300px; margin:0 auto 20px; }
+  .itinerary-time{ font-family:'Fredoka', sans-serif; font-weight:700; font-size:1rem; color:var(--rosa-700); min-width:58px; }
+  .itinerary-what{ font-size:.92rem; }
+
+  .venue-name{ font-size:1.2rem; font-weight:700; color:var(--rosa-700); margin-top:6px; }
+  .venue-addr{ font-size:.85rem; color:var(--carbon-suave); margin-top:4px; }
+
+  .btn{
+    display:inline-block; margin-top:14px; padding:13px 28px;
+    background:#fff; color:var(--rosa-700);
+    text-decoration:none; font-weight:700; font-size:.82rem;
+    border-radius:24px; transition:transform .15s ease;
+  }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn.outline{ background:transparent; border:2px solid var(--rosa-700); color:var(--rosa-700); }
+  .btn-row{ display:flex; flex-direction:column; gap:10px; align-items:center; margin-top:16px; }
+
+  .nota-tag{ display:inline-block; padding:12px 20px; background:#fff; border-radius:20px; font-size:.85rem; margin-top:10px; max-width:300px; line-height:1.5; box-shadow:0 6px 16px rgba(232,137,158,0.15); }
+
+  .gallery{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:24px; }
+  .ph{ aspect-ratio:1; background:#fff; border:2px dashed var(--rosa-300); border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:.65rem; color:var(--carbon-suave); letter-spacing:.06em; text-align:center; padding:8px; }
+
+  .mensaje-texto{ font-size:1rem; line-height:1.8; max-width:310px; margin:20px auto 0; color:var(--carbon); }
+  .mensaje-firma{ font-family:'Caveat', cursive; font-weight:700; font-size:1.7rem; color:var(--rosa-700); margin-top:12px; }
+
+  .rsvp-note{ font-size:.85rem; color:var(--carbon-suave); max-width:280px; margin:14px auto 0; line-height:1.6; }
+
+  footer{ padding:56px 30px 76px; text-align:center; }
+  footer .footer-name{ font-family:'Caveat', cursive; font-weight:700; font-size:2.2rem; color:var(--rosa-700); }
+
+  .config-flag{
+    position:fixed; bottom:10px; right:10px; background:var(--rosa-700); color:#fff;
+    font-size:.6rem; padding:4px 8px; border-radius:8px; opacity:.6; font-family:'Fredoka',sans-serif; z-index:5;
+  }
+</style>
+</head>
+<body>
+
+<div class="floaties" id="floaties"></div>
+
+<div class="wrap">
+  <section id="hero" class="fade-up">
+    <div class="big-num" id="big-num"></div>
+    <div class="subtitulo"><span class="wing">🦋</span> <span id="subtitulo-text"></span> <span class="wing">🦋</span></div>
+    <h1 class="kid-name" id="kid-name"></h1>
+    <div class="the-date" id="the-date"></div>
+    <div class="scroll-hint">Deslizá para ver más ↓</div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="countdown-section" class="fade-up">
+    <div class="blob">
+      <h2>¡Falta muy poco!</h2>
+      <div class="countdown">
+        <div class="cd-box"><div class="cd-num" id="cd-d">00</div><div class="cd-label">días</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-h">00</div><div class="cd-label">hs</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-m">00</div><div class="cd-label">min</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-s">00</div><div class="cd-label">seg</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="itinerary-section" class="fade-up">
+    <h2>La fiesta</h2>
+    <div id="itinerary-list" style="margin-top:24px;"></div>
+    <div class="venue-name" id="venue-name"></div>
+    <div class="venue-addr" id="venue-addr"></div>
+    <a class="btn outline" id="maps-btn" href="#" target="_blank" rel="noopener">Ver ubicación</a>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="nota-section" class="fade-up">
+    <h2>Un dato</h2>
+    <div class="nota-tag" id="nota-text"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="gallery-section" class="fade-up">
+    <h2>Momentos</h2>
+    <div class="gallery" id="gallery-grid"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="mensaje-section" class="fade-up">
+    <h2>Nuestro mensaje</h2>
+    <p class="mensaje-texto" id="mensaje-texto"></p>
+    <div class="mensaje-firma" id="mensaje-firma"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="rsvp-section" class="fade-up">
+    <div class="blob">
+      <h2>Confirmación de asistencia</h2>
+      <p class="rsvp-note" id="rsvp-note" style="color:rgba(255,255,255,0.9);"></p>
+      <div class="btn-row" id="rsvp-buttons"></div>
+    </div>
+  </section>
+
+  <footer class="fade-up">
+    <div class="footer-name" id="footer-name"></div>
+    <p style="font-size:.85rem; color:var(--carbon-suave); margin-top:10px;" id="footer-note"></p>
+  </footer>
+</div>
+
+<div class="config-flag">TEMPLATE · cumple-infantil-0-2-anos-dulce v1</div>
+
+<script>
+/* ============================================================
+   CONFIG — esto es lo único que se edita por cada cliente.
+
+   NOVEDAD DE MOTOR: rsvpContactos — lista de botones de
+   confirmación (en vez de un solo whatsappNumero/whatsappMensaje).
+   Pensado para poder confirmar por WhatsApp de mamá y de papá por
+   separado, patrón visto en una referencia de Instagram. Se puede
+   dejar con un solo contacto en el array si no hace falta el doble
+   botón.
+   ============================================================ */
+const CONFIG = {
+  nombre: "Ámbar",
+  subtitulo: "Te invito a celebrar mi cumpleaños",
+  edadNumero: "2",
+  fechaTexto: "23 de Agosto, 2026",
+  fechaCountdown: "2026-08-23T15:00:00",
+  itinerario: [
+    { hora: "15:00", que: "Recepción y bienvenida" },
+    { hora: "16:00", que: "Torta y mesa dulce" },
+    { hora: "16:30", que: "Juegos y sorpresas" },
+    { hora: "18:00", que: "Cierre" },
+  ],
+  lugarNombre: "Salón Corazón de Azúcar",
+  lugarDireccion: "Cornelio Saavedra 174, Monte Grande",
+  mapsUrl: "https://maps.google.com/?q=Cornelio+Saavedra+174+Monte+Grande",
+  nota: "Va a haber mesa dulce y sorpresas para los peques 💗. Tu presencia es el mejor regalo.",
+  fotos: 4,
+  mensaje: "Estamos súper felices de compartir este momento tan especial con las personas que más queremos. ¡Nos encantaría que nos acompañes!",
+  mensajeFirma: "Con amor, Mamá y Papá",
+  rsvpNota: "Me encantaría que formaras parte de este momento tan especial.",
+  rsvpContactos: [
+    { etiqueta: "Confirmar con mamá", numero: "5491100000001", mensaje: "¡Hola! Confirmo mi asistencia al cumple de Ámbar 💗" },
+    { etiqueta: "Confirmar con papá", numero: "5491100000002", mensaje: "¡Hola! Confirmo mi asistencia al cumple de Ámbar 💗" },
+  ],
+  footerNota: "Gracias por ser parte de este momento.",
+};
+
+// --- Render ---
+document.getElementById('big-num').textContent = CONFIG.edadNumero;
+document.getElementById('subtitulo-text').textContent = CONFIG.subtitulo;
+document.getElementById('kid-name').textContent = CONFIG.nombre;
+document.getElementById('the-date').textContent = CONFIG.fechaTexto;
+document.getElementById('footer-name').textContent = CONFIG.nombre;
+document.getElementById('footer-note').textContent = CONFIG.footerNota;
+document.getElementById('venue-name').textContent = CONFIG.lugarNombre;
+document.getElementById('venue-addr').textContent = CONFIG.lugarDireccion;
+document.getElementById('maps-btn').href = CONFIG.mapsUrl;
+document.getElementById('nota-text').textContent = CONFIG.nota;
+document.getElementById('mensaje-texto').textContent = CONFIG.mensaje;
+document.getElementById('mensaje-firma').textContent = CONFIG.mensajeFirma;
+document.getElementById('rsvp-note').textContent = CONFIG.rsvpNota;
+
+const itList = document.getElementById('itinerary-list');
+CONFIG.itinerario.forEach(item=>{
+  const div = document.createElement('div');
+  div.className = 'itinerary-item';
+  div.innerHTML = `<div class="itinerary-time">${item.hora}</div><div class="itinerary-what">${item.que}</div>`;
+  itList.appendChild(div);
+});
+
+const gallery = document.getElementById('gallery-grid');
+for(let i=0;i<CONFIG.fotos;i++){
+  const ph = document.createElement('div');
+  ph.className = 'ph';
+  ph.textContent = 'Foto ' + (i+1);
+  gallery.appendChild(ph);
+}
+
+// --- RSVP: uno o varios botones según CONFIG.rsvpContactos ---
+const rsvpBox = document.getElementById('rsvp-buttons');
+CONFIG.rsvpContactos.forEach(c=>{
+  const a = document.createElement('a');
+  a.className = 'btn';
+  a.target = '_blank';
+  a.rel = 'noopener';
+  a.href = `https://wa.me/${c.numero}?text=${encodeURIComponent(c.mensaje)}`;
+  a.textContent = c.etiqueta;
+  rsvpBox.appendChild(a);
+});
+
+// --- Elementos flotantes (corazones/mariposas/brillo) ---
+(function(){
+  const container = document.getElementById('floaties');
+  const emojis = ['💗', '🩷', '🦋', '✨'];
+  const count = 10;
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'floatie';
+    const size = 14 + Math.random()*16;
+    el.style.left = (Math.random()*94) + '%';
+    el.style.fontSize = size + 'px';
+    el.textContent = emojis[i % emojis.length];
+    el.style.animationDuration = (14 + Math.random()*10) + 's';
+    el.style.animationDelay = (Math.random()*14) + 's';
+    container.appendChild(el);
+  }
+})();
+
+// --- Countdown ---
+function tick(){
+  const target = new Date(CONFIG.fechaCountdown);
+  const now = new Date();
+  let diff = Math.max(0, target - now);
+  document.getElementById('cd-d').textContent = String(Math.floor(diff/(1000*60*60*24))).padStart(2,'0');
+  document.getElementById('cd-h').textContent = String(Math.floor((diff/(1000*60*60))%24)).padStart(2,'0');
+  document.getElementById('cd-m').textContent = String(Math.floor((diff/(1000*60))%60)).padStart(2,'0');
+  document.getElementById('cd-s').textContent = String(Math.floor((diff/1000)%60)).padStart(2,'0');
+}
+tick(); setInterval(tick, 1000);
+
+// --- Fade up on scroll ---
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold:0.25});
+document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>

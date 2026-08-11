@@ -21,6 +21,8 @@ Categorías madre por tipo de evento, cada una con su(s) propio(s) subestilo(s) 
 
 Cada template usa un objeto `CONFIG` centralizado (nombre, fecha, lugar, colores, textos, WhatsApp, mapa) para separar contenido de diseño. El motor de plantillas, cuando exista, solo necesita rellenar ese objeto por cliente en vez de tocar HTML/CSS de cada invitación.
 
+**Novedad de motor (sumada en `cumple-infantil/0-2-anos/dulce/`)**: `CONFIG.rsvpContactos` — un array de `{etiqueta, numero, mensaje}` en vez de un único `whatsappNumero`/`whatsappMensaje`. Permite RSVP con más de un botón (ej: "Confirmar con mamá" / "Confirmar con papá"), pero también funciona con un solo contacto en el array. El resto de los templates todavía usan el patrón viejo (`whatsappNumero` + `whatsappMensaje` únicos) — migrarlos a `rsvpContactos` queda como tarea pendiente del motor si se quiere unificar.
+
 ## Base técnica reutilizable (de la invitación de Aitana)
 
 - Scroll continuo (no pantallas completas por sección) con `IntersectionObserver` para fade-in progresivo.
@@ -51,11 +53,13 @@ Búsqueda de tendencias/competidores para decidir qué sumar. Hallazgos que llev
 
 ## Punto pendiente importante — copyright
 
-Cuidado con temas de personajes con copyright (Dora la Exploradora, Plim Plin, etc.): no se pueden reproducir esos personajes tal cual para vender — es infracción de marca.
+Cuidado con temas de personajes con copyright (Dora la Exploradora, Plim Plin, Minnie Mouse, etc.): no se pueden reproducir esos personajes tal cual para vender — es infracción de marca.
 
 Alternativas:
 - Diseños inspirados en la temática (selva/exploradora, circo/payaso) con personajes genéricos propios.
 - Clip art con licencia comercial que el cliente ya tenga comprado.
+
+**Caso real (2026-08-10)**: se encontró una invitación de referencia en Instagram (@invita.digitalc) con tema Minnie Mouse. Se descartó el personaje, pero se rescató el **formato/UX** (número grande detrás del nombre, tarjetas "blob", RSVP doble mamá/papá) para el nuevo template `cumple-infantil/0-2-anos/dulce/`. Buen precedente: cuando aparezca una referencia con copyright, separar "estilo/interacción" (reutilizable) de "personaje" (no reutilizable).
 
 ## Publicación (catálogo de demostración)
 
@@ -83,11 +87,13 @@ invitaciones-digitales/
       botanico/index.html    (vino/salvia/crema)
     quince/index.html       (template glam — "Mis 15", con CONFIG)
     cumple-infantil/
-      README.md             (subestilos por rango de edad)
-      0-2-anos/index.html   (pastel)
-      3-5-anos/index.html   (selva/animalitos genéricos)
-      6-9-anos/index.html   (espacial/astronautas genéricos)
-      10-12-anos/index.html (gamer/pixel-art/neón)
+      README.md               (subestilos por rango de edad)
+      0-2-anos/
+        pastel/index.html     (pastel, hereda de base-aitana)
+        dulce/index.html      (blob/número gigante/RSVP doble mamá-papá)
+      3-5-anos/index.html     (selva/animalitos genéricos)
+      6-9-anos/index.html     (espacial/astronautas genéricos)
+      10-12-anos/index.html   (gamer/pixel-art/neón)
     baby-shower/
       README.md              (variantes por género)
       neutro/index.html      (boho: salvia/mostaza/crema)
