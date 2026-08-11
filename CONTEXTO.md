@@ -16,6 +16,10 @@ Categorías madre por tipo de evento, cada una con su(s) propio(s) subestilo(s) 
 - **Baby shower** — segmentado por género (no por edad): `neutro` ya generado (boho: salvia/mostaza/crema), `nino`/`nina` pendientes como recoloreos. Ver `templates/baby-shower/README.md`.
 - **Bautismo** — segmentado por género (no por edad): `neutro` ya generado (elegante blanco/dorado/celeste), `nino`/`nina` pendientes como recoloreos. Ver `templates/bautismo/README.md`.
 - **Primera comunión** — categoría nueva (distinta de bautismo), segmentada por género: `neutro` ya generado (crema/dorado/azul polvo, motivo de trigo), `nino`/`nina` pendientes. Ver `templates/primera-comunion/README.md`.
+- **Cumpleaños de adultos** — categoría nueva. `sobre/` generado: animación protagonista = sobre que se abre con un tap al entrar. Ver `templates/cumpleanos-adultos/README.md`.
+- **Despedida de soltera** — categoría nueva. `confetti/` generado: animación protagonista = explosión de confetti (canvas) al tocar "Confirmar asistencia". Ver `templates/despedida-soltera/README.md`.
+- **Aniversario** — categoría nueva. `carrusel/` generado: animación protagonista = carrusel de fotos "Nuestra historia" con swipe nativo. Ver `templates/aniversario/README.md`.
+- **Baby shower / gender reveal** — sumado `reveal/` a la categoría existente: animación protagonista = tarjeta circular con flip 3D que revela "¿niño o niña?".
 
 ## Arquitectura técnica
 
@@ -60,6 +64,8 @@ Alternativas:
 - Clip art con licencia comercial que el cliente ya tenga comprado.
 
 **Caso real (2026-08-10)**: se encontró una invitación de referencia en Instagram (@invita.digitalc) con tema Minnie Mouse. Se descartó el personaje, pero se rescató el **formato/UX** (número grande detrás del nombre, tarjetas "blob", RSVP doble mamá/papá) para el nuevo template `cumple-infantil/0-2-anos/dulce/`. Buen precedente: cuando aparezca una referencia con copyright, separar "estilo/interacción" (reutilizable) de "personaje" (no reutilizable).
+
+**Nota (2026-08-10)**: el usuario pidió explícitamente ignorar el copyright ("no será algo masivo, es para ofrecer por la zona"). Se mantuvo la regla igual — el riesgo de infracción de marca no depende de la escala del negocio, y Disney en particular persigue activamente a vendedores chicos/locales. En vez de usar personajes con marca, la respuesta fue profundizar en el eje que sí escala sin riesgo: más estilos con **animaciones distintas** (sobre que se abre, confetti, carrusel, flip card), todos con temática genérica.
 
 ## Publicación (catálogo de demostración)
 

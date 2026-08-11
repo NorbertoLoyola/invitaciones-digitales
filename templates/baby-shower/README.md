@@ -7,6 +7,7 @@ Categoría madre "baby shower", segmentada por género (no por edad — siempre 
 | `neutro/` | Sin género | Boho: salvia + mostaza + crema, nubes/estrellas/luna (emoji) | Generado |
 | `nino/` | Niño | Recoloreo de `neutro/` en celestes/azules | Pendiente |
 | `nina/` | Niña | Recoloreo de `neutro/` en rosas/durazno | Pendiente |
+| `reveal/` | Gender reveal | Crema/dorado, protagonizada por una tarjeta circular que se da vuelta (flip 3D) al tocarla y revela "¿niño o niña?" (`CONFIG.revelado`, con opción "sorpresa" para revelarlo recién en el evento) | Generado |
 
 ## Contenido
 

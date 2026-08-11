@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#F8F0EC">
+<title>Aniversario</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Parisienne&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     MOTOR DE PLANTILLA — CONFIG
+     Todo el contenido editable vive en el objeto CONFIG (abajo,
+     dentro del <script>). Los estilos de acá no deberían tocarse
+     para generar una invitación nueva: sólo se edita CONFIG.
+     Categoría nueva: aniversario — protagonizada por un CARRUSEL
+     de fotos con swipe nativo (scroll-snap) + flechas y puntos.
+     ============================================================ */
+
+  :root{
+    --crema: #F8F0EC;
+    --vino: #7A3B45;
+    --vino-osc: #5A2933;
+    --blush: #E9C3C0;
+    --dorado: #B08D57;
+    --carbon: #40312E;
+    color-scheme: light;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; color-scheme:light; background:var(--crema); }
+  body{
+    font-family:'Jost', sans-serif;
+    font-weight:300;
+    color:var(--carbon);
+    color-scheme:light;
+    background:linear-gradient(180deg, var(--crema) 0%, #F3E4DE 55%, #EAD2CB 140%);
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  h1,h2{ font-family:'Cormorant Garamond', serif; font-weight:500; margin:0; }
+  .script{ font-family:'Parisienne', cursive; font-weight:400; }
+
+  .wrap{ max-width:480px; margin:0 auto; }
+  section{ padding:64px 30px; text-align:center; }
+
+  .fade-up{ opacity:0; transform:translateY(22px); transition:opacity .9s ease, transform .9s ease; }
+  .fade-up.visible{ opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce){ .fade-up{ opacity:1; transform:none; transition:none; } }
+
+  #hero{ min-height:88vh; display:flex; flex-direction:column; justify-content:center; padding-top:44px; }
+  .eyebrow{ letter-spacing:.24em; text-transform:uppercase; font-size:.68rem; color:var(--vino); margin-bottom:16px; }
+  .pareja-name{ font-size:2.7rem; line-height:1.15; color:var(--vino-osc); }
+  .anios-num{ font-family:'Parisienne', cursive; font-size:3.4rem; color:var(--dorado); margin:10px 0; }
+  .the-date{ font-size:1rem; letter-spacing:.06em; color:var(--carbon); }
+  .scroll-hint{ margin-top:48px; font-size:.72rem; letter-spacing:.15em; text-transform:uppercase; color:var(--vino); opacity:.8; }
+
+  .divider{ width:1px; height:50px; background:var(--dorado); margin:0 auto; opacity:.5; }
+
+  .countdown{ display:flex; justify-content:center; gap:16px; margin-top:26px; }
+  .cd-box{ min-width:56px; }
+  .cd-num{ font-family:'Cormorant Garamond', serif; font-size:2rem; color:var(--vino-osc); }
+  .cd-label{ font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:var(--dorado); }
+
+  /* ---------- Carrusel de fotos ---------- */
+  .carrusel-wrap{ position:relative; margin-top:22px; }
+  .carrusel{
+    display:flex; overflow-x:auto; scroll-snap-type:x mandatory;
+    gap:0; border-radius:14px; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .carrusel::-webkit-scrollbar{ display:none; }
+  .slide{
+    flex:0 0 100%; scroll-snap-align:center;
+    aspect-ratio:4/3; background:var(--blush);
+    border:1px solid var(--dorado); border-radius:14px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:var(--vino-osc); font-size:.85rem; letter-spacing:.06em;
+    gap:6px;
+  }
+  .slide .anio{ font-family:'Cormorant Garamond', serif; font-size:1.6rem; }
+  .carrusel-nav{ display:flex; justify-content:center; gap:10px; margin-top:14px; }
+  .carrusel-dot{ width:8px; height:8px; border-radius:50%; background:var(--blush); border:1px solid var(--dorado); cursor:pointer; transition:background .2s ease; }
+  .carrusel-dot.activo{ background:var(--vino); }
+  .carrusel-arrow{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:34px; height:34px; border-radius:50%; background:#fff; border:1px solid var(--dorado);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--vino-osc);
+    font-size:1rem; box-shadow:0 4px 10px rgba(90,41,51,0.15);
+  }
+  .carrusel-arrow.prev{ left:-6px; }
+  .carrusel-arrow.next{ right:-6px; }
+
+  .itinerary-item{ display:flex; align-items:flex-start; gap:16px; text-align:left; max-width:300px; margin:0 auto 22px; }
+  .itinerary-time{ font-family:'Cormorant Garamond', serif; font-size:1.1rem; color:var(--vino); min-width:60px; }
+  .itinerary-what{ font-size:.92rem; }
+
+  .venue-name{ font-size:1.25rem; color:var(--vino-osc); margin-top:6px; }
+  .venue-addr{ font-size:.85rem; color:#7a6a63; margin-top:4px; }
+
+  .btn{
+    display:inline-block; margin-top:20px; padding:13px 30px;
+    background:var(--vino); color:#fff;
+    text-decoration:none; font-size:.78rem; letter-spacing:.1em;
+    text-transform:uppercase; border-radius:2px;
+    transition:background .25s ease;
+  }
+  .btn:hover{ background:var(--vino-osc); }
+  .btn.outline{ background:transparent; border:1px solid var(--vino); color:var(--vino); }
+
+  .nota-tag{ display:inline-block; padding:10px 20px; border:1px solid var(--dorado); border-radius:20px; font-size:.85rem; margin-top:10px; max-width:300px; line-height:1.5; }
+
+  .mensaje-texto{ font-size:1rem; line-height:1.8; max-width:320px; margin:22px auto 0; color:#3a2c28; font-style:italic; }
+  .mensaje-firma{ font-family:'Parisienne', cursive; font-size:1.6rem; color:var(--vino-osc); margin-top:16px; }
+
+  .rsvp-note{ font-size:.85rem; color:#7a6a63; max-width:280px; margin:14px auto 0; line-height:1.6; }
+
+  footer{ padding:60px 30px 80px; text-align:center; }
+  footer .script{ font-size:2.2rem; color:var(--vino-osc); }
+
+  .config-flag{
+    position:fixed; bottom:10px; right:10px; background:var(--carbon); color:var(--crema);
+    font-size:.6rem; padding:4px 8px; border-radius:3px; opacity:.55; font-family:'Jost',sans-serif; z-index:5;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <section id="hero" class="fade-up">
+    <div class="eyebrow" id="eyebrow-text"></div>
+    <h1 class="pareja-name" id="pareja-name"></h1>
+    <div class="anios-num" id="anios-num"></div>
+    <div class="the-date" id="the-date"></div>
+    <div class="scroll-hint">Deslizá para ver más ↓</div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="countdown-section" class="fade-up">
+    <h2>Falta poco</h2>
+    <div class="countdown">
+      <div class="cd-box"><div class="cd-num" id="cd-d">00</div><div class="cd-label">días</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-h">00</div><div class="cd-label">hs</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-m">00</div><div class="cd-label">min</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-s">00</div><div class="cd-label">seg</div></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="carrusel-section" class="fade-up">
+    <h2>Nuestra historia</h2>
+    <div class="carrusel-wrap">
+      <div class="carrusel-arrow prev" id="carrusel-prev">‹</div>
+      <div class="carrusel" id="carrusel"></div>
+      <div class="carrusel-arrow next" id="carrusel-next">›</div>
+    </div>
+    <div class="carrusel-nav" id="carrusel-dots"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="itinerary-section" class="fade-up">
+    <h2>El festejo</h2>
+    <div id="itinerary-list" style="margin-top:26px;"></div>
+    <div class="venue-name" id="venue-name"></div>
+    <div class="venue-addr" id="venue-addr"></div>
+    <a class="btn outline" id="maps-btn" href="#" target="_blank" rel="noopener">Cómo llegar</a>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="nota-section" class="fade-up">
+    <h2>Un dato</h2>
+    <div class="nota-tag" id="nota-text"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="mensaje-section" class="fade-up">
+    <h2>Nuestro mensaje</h2>
+    <p class="mensaje-texto" id="mensaje-texto"></p>
+    <div class="script mensaje-firma" id="mensaje-firma"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="rsvp-section" class="fade-up">
+    <h2>Confirmá tu asistencia</h2>
+    <p class="rsvp-note" id="rsvp-note"></p>
+    <a class="btn" id="rsvp-btn" href="#" target="_blank" rel="noopener">Confirmar por WhatsApp</a>
+  </section>
+
+  <footer class="fade-up">
+    <div class="script" id="footer-names"></div>
+    <p style="font-size:.85rem; color:#7a6a63; margin-top:10px;" id="footer-note"></p>
+  </footer>
+</div>
+
+<div class="config-flag">TEMPLATE · aniversario-carrusel v1</div>
+
+<script>
+/* ============================================================
+   CONFIG — esto es lo único que se edita por cada cliente.
+   ============================================================ */
+const CONFIG = {
+  nombreUno: "Marisa",
+  nombreDos: "Hugo",
+  eyebrow: "Celebramos nuestro aniversario",
+  anios: "25 años juntos",
+  fechaTexto: "2 de Mayo, 2027",
+  fechaCountdown: "2027-05-02T20:00:00",
+  momentos: [
+    { anio: "2002", texto: "Nos conocimos" },
+    { anio: "2007", texto: "Nos casamos" },
+    { anio: "2015", texto: "Nuestro primer viaje juntos" },
+    { anio: "2027", texto: "25 años después, seguimos eligiéndonos" },
+  ],
+  itinerario: [
+    { hora: "20:00", que: "Recepción y brindis" },
+    { hora: "21:00", que: "Cena" },
+    { hora: "22:30", que: "Palabras y recuerdos" },
+    { hora: "23:30", que: "Fiesta" },
+  ],
+  lugarNombre: "Salón Los Robles",
+  lugarDireccion: "Av. del Libertador 6400, Buenos Aires",
+  mapsUrl: "https://maps.google.com/?q=Salon+Los+Robles",
+  nota: "Dress code: elegante. Va a haber una mesa con fotos de estos 25 años — si tenés alguna, traela.",
+  mensaje: "Después de 25 años seguimos eligiéndonos cada día. Nos encantaría festejarlo rodeados de la gente que fue parte de nuestra historia.",
+  mensajeFirma: "Marisa & Hugo",
+  rsvpNota: "Por favor confirmá tu asistencia antes del 15 de Abril para organizar todo con cariño.",
+  whatsappNumero: "5491100000000",
+  whatsappMensaje: "¡Hola! Confirmo mi asistencia al aniversario de Marisa y Hugo 🥂",
+  footerNota: "Gracias por acompañarnos en este camino.",
+};
+
+// --- Render ---
+document.getElementById('eyebrow-text').textContent = CONFIG.eyebrow;
+document.getElementById('pareja-name').textContent = CONFIG.nombreUno + ' & ' + CONFIG.nombreDos;
+document.getElementById('anios-num').textContent = CONFIG.anios;
+document.getElementById('the-date').textContent = CONFIG.fechaTexto;
+document.getElementById('footer-names').textContent = CONFIG.nombreUno + ' & ' + CONFIG.nombreDos;
+document.getElementById('footer-note').textContent = CONFIG.footerNota;
+document.getElementById('venue-name').textContent = CONFIG.lugarNombre;
+document.getElementById('venue-addr').textContent = CONFIG.lugarDireccion;
+document.getElementById('maps-btn').href = CONFIG.mapsUrl;
+document.getElementById('nota-text').textContent = CONFIG.nota;
+document.getElementById('mensaje-texto').textContent = CONFIG.mensaje;
+document.getElementById('mensaje-firma').textContent = CONFIG.mensajeFirma;
+document.getElementById('rsvp-note').textContent = CONFIG.rsvpNota;
+document.getElementById('rsvp-btn').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${encodeURIComponent(CONFIG.whatsappMensaje)}`;
+
+const itList = document.getElementById('itinerary-list');
+CONFIG.itinerario.forEach(item=>{
+  const div = document.createElement('div');
+  div.className = 'itinerary-item';
+  div.innerHTML = `<div class="itinerary-time">${item.hora}</div><div class="itinerary-what">${item.que}</div>`;
+  itList.appendChild(div);
+});
+
+// --- Carrusel ---
+const carrusel = document.getElementById('carrusel');
+const dotsBox = document.getElementById('carrusel-dots');
+CONFIG.momentos.forEach((m, i)=>{
+  const slide = document.createElement('div');
+  slide.className = 'slide';
+  slide.innerHTML = `<div class="anio">${m.anio}</div><div>${m.texto}</div>`;
+  carrusel.appendChild(slide);
+
+  const dot = document.createElement('div');
+  dot.className = 'carrusel-dot' + (i === 0 ? ' activo' : '');
+  dot.addEventListener('click', () => {
+    carrusel.scrollTo({ left: slide.offsetLeft, behavior:'smooth' });
+  });
+  dotsBox.appendChild(dot);
+});
+
+function actualizarDots(){
+  const idx = Math.round(carrusel.scrollLeft / carrusel.clientWidth);
+  [...dotsBox.children].forEach((d,i)=> d.classList.toggle('activo', i === idx));
+}
+carrusel.addEventListener('scroll', () => {
+  clearTimeout(carrusel._t);
+  carrusel._t = setTimeout(actualizarDots, 80);
+});
+
+document.getElementById('carrusel-prev').addEventListener('click', () => {
+  carrusel.scrollBy({ left: -carrusel.clientWidth, behavior:'smooth' });
+});
+document.getElementById('carrusel-next').addEventListener('click', () => {
+  carrusel.scrollBy({ left: carrusel.clientWidth, behavior:'smooth' });
+});
+
+// --- Countdown ---
+function tick(){
+  const target = new Date(CONFIG.fechaCountdown);
+  const now = new Date();
+  let diff = Math.max(0, target - now);
+  document.getElementById('cd-d').textContent = String(Math.floor(diff/(1000*60*60*24))).padStart(2,'0');
+  document.getElementById('cd-h').textContent = String(Math.floor((diff/(1000*60*60))%24)).padStart(2,'0');
+  document.getElementById('cd-m').textContent = String(Math.floor((diff/(1000*60))%60)).padStart(2,'0');
+  document.getElementById('cd-s').textContent = String(Math.floor((diff/1000)%60)).padStart(2,'0');
+}
+tick(); setInterval(tick, 1000);
+
+// --- Fade up on scroll ---
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold:0.25});
+document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>

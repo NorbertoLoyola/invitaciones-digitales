@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#F4F1EC">
+<title>Cumpleaños</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     MOTOR DE PLANTILLA — CONFIG
+     Todo el contenido editable vive en el objeto CONFIG (abajo,
+     dentro del <script>). Los estilos de acá no deberían tocarse
+     para generar una invitación nueva: sólo se edita CONFIG.
+     Categoría nueva: cumpleaños de adultos — elegante/moderno,
+     protagonizada por una animación de SOBRE que se abre al
+     entrar (tap/click) antes de mostrar la invitación.
+     ============================================================ */
+
+  :root{
+    --crema: #F4F1EC;
+    --carbon: #26221D;
+    --dorado: #B08D57;
+    --dorado-osc: #8F6F3D;
+    --sobre: #EDE6D6;
+    --sobre-osc: #D9CBA9;
+    color-scheme: light;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; color-scheme:light; background:var(--crema); }
+  body{
+    font-family:'Jost', sans-serif;
+    font-weight:300;
+    color:var(--carbon);
+    color-scheme:light;
+    background:var(--crema);
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  h1,h2{ font-family:'Fraunces', serif; font-weight:600; margin:0; }
+
+  /* ---------- Overlay de sobre ---------- */
+  #sobre-overlay{
+    position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(180deg, var(--crema), #EAE3D2);
+    transition:opacity .6s ease, visibility .6s ease;
+    perspective:1200px;
+    cursor:pointer;
+  }
+  #sobre-overlay.oculto{ opacity:0; visibility:hidden; pointer-events:none; }
+
+  .sobre{ position:relative; width:260px; height:180px; }
+  .sobre-cuerpo{
+    position:absolute; inset:0; background:var(--sobre);
+    border:1px solid var(--dorado); border-radius:4px;
+    box-shadow:0 20px 40px rgba(38,34,29,0.15);
+  }
+  .sobre-tapa{
+    position:absolute; top:0; left:0; width:100%; height:50%;
+    background:var(--sobre-osc);
+    clip-path:polygon(0 0, 100% 0, 50% 100%);
+    transform-origin:top center;
+    transition:transform .9s cubic-bezier(.6,0,.3,1);
+    border-bottom:1px solid var(--dorado);
+    z-index:2;
+  }
+  .sobre-carta{
+    position:absolute; left:50%; top:20px; width:82%; height:70%;
+    background:#fff; border-radius:2px;
+    transform:translateX(-50%) translateY(0);
+    box-shadow:0 6px 16px rgba(38,34,29,0.12);
+    display:flex; align-items:center; justify-content:center;
+    text-align:center; padding:16px;
+    transition:transform .9s ease .3s;
+    z-index:1;
+  }
+  .sobre-carta span{ font-family:'Fraunces', serif; font-style:italic; color:var(--dorado-osc); font-size:1rem; }
+
+  #sobre-overlay.abierto .sobre-tapa{ transform:rotateX(180deg); }
+  #sobre-overlay.abierto .sobre-carta{ transform:translateX(-50%) translateY(-140px) scale(1.05); }
+
+  .sobre-hint{ position:absolute; bottom:-46px; left:50%; transform:translateX(-50%); font-size:.72rem; letter-spacing:.15em; text-transform:uppercase; color:var(--dorado-osc); white-space:nowrap; animation:pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:.55; } 50%{ opacity:1; } }
+
+  /* ---------- Resto de la invitación ---------- */
+  .wrap{ max-width:480px; margin:0 auto; position:relative; z-index:1; }
+  section{ padding:64px 30px; text-align:center; }
+
+  .fade-up{ opacity:0; transform:translateY(22px); transition:opacity .9s ease, transform .9s ease; }
+  .fade-up.visible{ opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce){ .fade-up{ opacity:1; transform:none; transition:none; } }
+
+  #hero{ min-height:80vh; display:flex; flex-direction:column; justify-content:center; padding-top:44px; }
+  .eyebrow{ letter-spacing:.24em; text-transform:uppercase; font-size:.68rem; color:var(--dorado-osc); margin-bottom:14px; }
+  .kid-name{ font-size:3rem; line-height:1.1; color:var(--carbon); }
+  .edad-tag{ display:inline-block; margin-top:10px; padding:6px 18px; border:1px solid var(--dorado); border-radius:20px; font-size:.85rem; color:var(--dorado-osc); }
+  .the-date{ margin-top:18px; font-size:1rem; letter-spacing:.06em; color:var(--carbon); }
+  .scroll-hint{ margin-top:48px; font-size:.72rem; letter-spacing:.15em; text-transform:uppercase; color:var(--dorado-osc); opacity:.8; }
+
+  .divider{ width:50px; height:1px; background:var(--dorado); margin:0 auto; opacity:.6; }
+
+  .countdown{ display:flex; justify-content:center; gap:16px; margin-top:26px; }
+  .cd-box{ min-width:56px; }
+  .cd-num{ font-family:'Fraunces', serif; font-size:2rem; color:var(--carbon); }
+  .cd-label{ font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:var(--dorado-osc); }
+
+  .itinerary-item{ display:flex; align-items:flex-start; gap:16px; text-align:left; max-width:300px; margin:0 auto 22px; }
+  .itinerary-time{ font-family:'Fraunces', serif; font-size:1.1rem; color:var(--dorado-osc); min-width:60px; }
+  .itinerary-what{ font-size:.92rem; }
+
+  .venue-name{ font-size:1.25rem; color:var(--carbon); margin-top:6px; }
+  .venue-addr{ font-size:.85rem; color:#7a7160; margin-top:4px; }
+
+  .btn{
+    display:inline-block; margin-top:20px; padding:13px 30px;
+    background:var(--carbon); color:var(--crema);
+    text-decoration:none; font-size:.78rem; letter-spacing:.1em;
+    text-transform:uppercase; border-radius:2px;
+    transition:background .25s ease;
+  }
+  .btn:hover{ background:var(--dorado-osc); }
+  .btn.outline{ background:transparent; border:1px solid var(--carbon); color:var(--carbon); }
+
+  .nota-tag{ display:inline-block; padding:10px 20px; border:1px solid var(--dorado); border-radius:20px; font-size:.85rem; margin-top:10px; max-width:300px; line-height:1.5; }
+
+  .gallery{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:24px; }
+  .ph{ aspect-ratio:1; background:var(--sobre); border:1px solid var(--dorado); display:flex; align-items:center; justify-content:center; font-size:.65rem; color:#7a7160; letter-spacing:.06em; text-align:center; padding:8px; }
+
+  .mensaje-texto{ font-size:1rem; line-height:1.8; max-width:310px; margin:20px auto 0; color:#3a332a; font-style:italic; }
+  .mensaje-firma{ font-family:'Fraunces', serif; font-style:italic; font-size:1.4rem; color:var(--dorado-osc); margin-top:14px; }
+
+  .rsvp-note{ font-size:.85rem; color:#7a7160; max-width:280px; margin:14px auto 0; line-height:1.6; }
+
+  footer{ padding:56px 30px 76px; text-align:center; }
+  footer .footer-name{ font-family:'Fraunces', serif; font-style:italic; font-size:1.9rem; color:var(--dorado-osc); }
+
+  .config-flag{
+    position:fixed; bottom:10px; right:10px; background:var(--carbon); color:var(--crema);
+    font-size:.6rem; padding:4px 8px; border-radius:3px; opacity:.55; font-family:'Jost',sans-serif; z-index:5;
+  }
+</style>
+</head>
+<body>
+
+<div id="sobre-overlay">
+  <div class="sobre">
+    <div class="sobre-carta"><span id="sobre-carta-texto"></span></div>
+    <div class="sobre-cuerpo"></div>
+    <div class="sobre-tapa"></div>
+    <div class="sobre-hint">Tocá para abrir</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <section id="hero" class="fade-up">
+    <div class="eyebrow" id="eyebrow-text"></div>
+    <h1 class="kid-name" id="kid-name"></h1>
+    <div class="edad-tag" id="edad-tag"></div>
+    <div class="the-date" id="the-date"></div>
+    <div class="scroll-hint">Deslizá para ver más ↓</div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="countdown-section" class="fade-up">
+    <h2>Falta poco</h2>
+    <div class="countdown">
+      <div class="cd-box"><div class="cd-num" id="cd-d">00</div><div class="cd-label">días</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-h">00</div><div class="cd-label">hs</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-m">00</div><div class="cd-label">min</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-s">00</div><div class="cd-label">seg</div></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="itinerary-section" class="fade-up">
+    <h2>La celebración</h2>
+    <div id="itinerary-list" style="margin-top:26px;"></div>
+    <div class="venue-name" id="venue-name"></div>
+    <div class="venue-addr" id="venue-addr"></div>
+    <a class="btn outline" id="maps-btn" href="#" target="_blank" rel="noopener">Cómo llegar</a>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="nota-section" class="fade-up">
+    <h2>Un dato</h2>
+    <div class="nota-tag" id="nota-text"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="gallery-section" class="fade-up">
+    <h2>Momentos</h2>
+    <div class="gallery" id="gallery-grid"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="mensaje-section" class="fade-up">
+    <h2>Un mensaje</h2>
+    <p class="mensaje-texto" id="mensaje-texto"></p>
+    <div class="mensaje-firma" id="mensaje-firma"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="rsvp-section" class="fade-up">
+    <h2>Confirmá tu asistencia</h2>
+    <p class="rsvp-note" id="rsvp-note"></p>
+    <a class="btn" id="rsvp-btn" href="#" target="_blank" rel="noopener">Confirmar por WhatsApp</a>
+  </section>
+
+  <footer class="fade-up">
+    <div class="footer-name" id="footer-name"></div>
+    <p style="font-size:.85rem; color:#7a7160; margin-top:10px;" id="footer-note"></p>
+  </footer>
+</div>
+
+<div class="config-flag">TEMPLATE · cumpleanos-adultos-sobre v1</div>
+
+<script>
+/* ============================================================
+   CONFIG — esto es lo único que se edita por cada cliente.
+   ============================================================ */
+const CONFIG = {
+  nombre: "Sofía",
+  eyebrow: "Celebramos juntos",
+  edadTexto: "30 años",
+  cartaTexto: "Estás invitado/a",
+  fechaTexto: "14 de Noviembre, 2026",
+  fechaCountdown: "2026-11-14T21:00:00",
+  itinerario: [
+    { hora: "21:00", que: "Recepción y bienvenida" },
+    { hora: "22:00", que: "Brindis" },
+    { hora: "23:00", que: "Cena" },
+    { hora: "00:30", que: "Fiesta" },
+  ],
+  lugarNombre: "Terraza Alvear",
+  lugarDireccion: "Av. Alvear 1850, Buenos Aires",
+  mapsUrl: "https://maps.google.com/?q=Terraza+Alvear",
+  nota: "Dress code: elegante sport. La idea es celebrar sin apuro, quedate todo lo que quieras.",
+  fotos: 4,
+  mensaje: "Cumplir años es una excusa perfecta para juntar a la gente que quiero. Me encantaría que estés ahí para brindar juntos.",
+  mensajeFirma: "Sofía",
+  rsvpNota: "Por favor confirmá tu asistencia antes del 1 de Noviembre para organizar todo con cariño.",
+  whatsappNumero: "5491100000000",
+  whatsappMensaje: "¡Hola! Confirmo mi asistencia al cumple de Sofía 🥂",
+  footerNota: "Gracias por ser parte de este brindis.",
+};
+
+// --- Render ---
+document.getElementById('eyebrow-text').textContent = CONFIG.eyebrow;
+document.getElementById('kid-name').textContent = CONFIG.nombre;
+document.getElementById('edad-tag').textContent = CONFIG.edadTexto;
+document.getElementById('the-date').textContent = CONFIG.fechaTexto;
+document.getElementById('sobre-carta-texto').textContent = CONFIG.cartaTexto;
+document.getElementById('footer-name').textContent = CONFIG.nombre;
+document.getElementById('footer-note').textContent = CONFIG.footerNota;
+document.getElementById('venue-name').textContent = CONFIG.lugarNombre;
+document.getElementById('venue-addr').textContent = CONFIG.lugarDireccion;
+document.getElementById('maps-btn').href = CONFIG.mapsUrl;
+document.getElementById('nota-text').textContent = CONFIG.nota;
+document.getElementById('mensaje-texto').textContent = CONFIG.mensaje;
+document.getElementById('mensaje-firma').textContent = CONFIG.mensajeFirma;
+document.getElementById('rsvp-note').textContent = CONFIG.rsvpNota;
+document.getElementById('rsvp-btn').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${encodeURIComponent(CONFIG.whatsappMensaje)}`;
+
+const itList = document.getElementById('itinerary-list');
+CONFIG.itinerario.forEach(item=>{
+  const div = document.createElement('div');
+  div.className = 'itinerary-item';
+  div.innerHTML = `<div class="itinerary-time">${item.hora}</div><div class="itinerary-what">${item.que}</div>`;
+  itList.appendChild(div);
+});
+
+const gallery = document.getElementById('gallery-grid');
+for(let i=0;i<CONFIG.fotos;i++){
+  const ph = document.createElement('div');
+  ph.className = 'ph';
+  ph.textContent = 'Foto ' + (i+1);
+  gallery.appendChild(ph);
+}
+
+// --- Animación de sobre ---
+(function(){
+  const overlay = document.getElementById('sobre-overlay');
+  overlay.addEventListener('click', () => {
+    if(overlay.classList.contains('abierto')) return;
+    overlay.classList.add('abierto');
+    setTimeout(() => { overlay.classList.add('oculto'); }, 1100);
+  }, { once:true });
+})();
+
+// --- Countdown ---
+function tick(){
+  const target = new Date(CONFIG.fechaCountdown);
+  const now = new Date();
+  let diff = Math.max(0, target - now);
+  document.getElementById('cd-d').textContent = String(Math.floor(diff/(1000*60*60*24))).padStart(2,'0');
+  document.getElementById('cd-h').textContent = String(Math.floor((diff/(1000*60*60))%24)).padStart(2,'0');
+  document.getElementById('cd-m').textContent = String(Math.floor((diff/(1000*60))%60)).padStart(2,'0');
+  document.getElementById('cd-s').textContent = String(Math.floor((diff/1000)%60)).padStart(2,'0');
+}
+tick(); setInterval(tick, 1000);
+
+// --- Fade up on scroll ---
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold:0.25});
+document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>

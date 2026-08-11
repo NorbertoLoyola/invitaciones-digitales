@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#FFF3F8">
+<title>Despedida de soltera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     MOTOR DE PLANTILLA — CONFIG
+     Todo el contenido editable vive en el objeto CONFIG (abajo,
+     dentro del <script>). Los estilos de acá no deberían tocarse
+     para generar una invitación nueva: sólo se edita CONFIG.
+     Categoría nueva: despedida de soltera — protagonizada por una
+     explosión de CONFETTI (canvas) al tocar "Confirmar asistencia".
+     ============================================================ */
+
+  :root{
+    --crema: #FFF3F8;
+    --rosa: #F5A8C3;
+    --rosa-osc: #D96B96;
+    --dorado: #E0B33C;
+    --violeta: #B48CD9;
+    --carbon: #4A3040;
+    --carbon-suave: #8C6E7C;
+    color-scheme: light;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; color-scheme:light; background:var(--crema); }
+  body{
+    font-family:'Fredoka', sans-serif;
+    font-weight:500;
+    color:var(--carbon);
+    color-scheme:light;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(255,255,255,0.7), transparent 35%),
+      radial-gradient(circle at 90% 22%, rgba(180,140,217,0.15), transparent 40%),
+      linear-gradient(180deg, var(--crema) 0%, #FCE4EF 55%, #F9D3E6 140%);
+    background-attachment:fixed;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  h1,h2{ font-family:'Fredoka', sans-serif; font-weight:700; margin:0; }
+  .script{ font-family:'Caveat', cursive; font-weight:700; }
+
+  #confetti-canvas{ position:fixed; inset:0; z-index:40; pointer-events:none; }
+
+  .wrap{ max-width:480px; margin:0 auto; position:relative; z-index:1; }
+  section{ padding:62px 28px; text-align:center; }
+
+  .fade-up{ opacity:0; transform:translateY(22px); transition:opacity .9s ease, transform .9s ease; }
+  .fade-up.visible{ opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce){ .fade-up{ opacity:1; transform:none; transition:none; } .floatie{ display:none; } }
+
+  .floaties{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .floatie{ position:absolute; bottom:-12%; opacity:0; line-height:1; animation-name:floatUp; animation-timing-function:ease-in; animation-iteration-count:infinite; }
+  @keyframes floatUp{
+    0%{ transform:translateY(0) translateX(0) rotate(0deg); opacity:0; }
+    8%{ opacity:.7; }
+    92%{ opacity:.55; }
+    100%{ transform:translateY(-112vh) translateX(28px) rotate(20deg); opacity:0; }
+  }
+
+  #hero{ min-height:88vh; display:flex; flex-direction:column; justify-content:center; padding-top:44px; }
+  .eyebrow{ letter-spacing:.16em; text-transform:uppercase; font-size:.9rem; font-weight:700; color:var(--rosa-osc); margin-bottom:10px; }
+  .novia-name{ font-family:'Caveat', cursive; font-size:4.2rem; line-height:1; color:var(--rosa-osc); margin:6px 0 14px; }
+  .the-date{ font-size:1rem; font-weight:600; color:var(--carbon); }
+  .scroll-hint{ margin-top:50px; font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--rosa-osc); opacity:.85; }
+
+  .divider{ width:60px; height:3px; border-radius:2px; background:var(--dorado); margin:0 auto; opacity:.7; }
+
+  .countdown{ display:flex; justify-content:center; gap:14px; margin-top:26px; }
+  .cd-box{ min-width:54px; background:rgba(255,255,255,.6); border-radius:14px; padding:10px 4px; }
+  .cd-num{ font-family:'Fredoka', sans-serif; font-weight:700; font-size:1.6rem; color:var(--rosa-osc); }
+  .cd-label{ font-size:.58rem; letter-spacing:.08em; text-transform:uppercase; color:var(--carbon-suave); }
+
+  .itinerary-item{ display:flex; align-items:flex-start; gap:16px; text-align:left; max-width:300px; margin:0 auto 20px; }
+  .itinerary-time{ font-family:'Fredoka', sans-serif; font-weight:700; font-size:1rem; color:var(--violeta); min-width:58px; }
+  .itinerary-what{ font-size:.92rem; }
+
+  .venue-name{ font-size:1.2rem; font-weight:700; color:var(--rosa-osc); margin-top:6px; }
+  .venue-addr{ font-size:.85rem; color:var(--carbon-suave); margin-top:4px; }
+
+  .btn{
+    display:inline-block; margin-top:20px; padding:14px 32px;
+    background:var(--rosa-osc); color:#fff;
+    text-decoration:none; font-weight:700; font-size:.85rem;
+    border-radius:28px; transition:transform .15s ease, background .2s ease;
+  }
+  .btn:hover{ transform:translateY(-2px); background:var(--violeta); }
+  .btn.outline{ background:transparent; border:2px solid var(--rosa-osc); color:var(--rosa-osc); }
+
+  .nota-tag{ display:inline-block; padding:12px 20px; background:#fff; border-radius:18px; font-size:.85rem; margin-top:10px; max-width:300px; line-height:1.5; box-shadow:0 6px 16px rgba(217,107,150,0.12); }
+
+  .gallery{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:24px; }
+  .ph{ aspect-ratio:1; background:#fff; border:2px dashed var(--rosa); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:600; color:var(--carbon-suave); text-align:center; padding:8px; }
+
+  .mensaje-texto{ font-size:1rem; line-height:1.8; max-width:310px; margin:20px auto 0; color:var(--carbon); }
+  .mensaje-firma{ font-family:'Caveat', cursive; font-weight:700; font-size:1.7rem; color:var(--rosa-osc); margin-top:12px; }
+
+  .rsvp-note{ font-size:.85rem; color:var(--carbon-suave); max-width:280px; margin:14px auto 0; line-height:1.6; }
+
+  footer{ padding:56px 30px 76px; text-align:center; }
+  footer .footer-name{ font-family:'Caveat', cursive; font-weight:700; font-size:2.1rem; color:var(--rosa-osc); }
+
+  .config-flag{
+    position:fixed; bottom:10px; right:10px; background:var(--rosa-osc); color:#fff;
+    font-size:.6rem; padding:4px 8px; border-radius:8px; opacity:.6; font-family:'Fredoka',sans-serif; z-index:5;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+<div class="floaties" id="floaties"></div>
+
+<div class="wrap">
+  <section id="hero" class="fade-up">
+    <div class="eyebrow" id="eyebrow-text"></div>
+    <h1 class="novia-name" id="novia-name"></h1>
+    <div class="the-date" id="the-date"></div>
+    <div class="scroll-hint">Deslizá para ver más ↓</div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="countdown-section" class="fade-up">
+    <h2>Falta poco 🥳</h2>
+    <div class="countdown">
+      <div class="cd-box"><div class="cd-num" id="cd-d">00</div><div class="cd-label">días</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-h">00</div><div class="cd-label">hs</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-m">00</div><div class="cd-label">min</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-s">00</div><div class="cd-label">seg</div></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="itinerary-section" class="fade-up">
+    <h2>El plan</h2>
+    <div id="itinerary-list" style="margin-top:24px;"></div>
+    <div class="venue-name" id="venue-name"></div>
+    <div class="venue-addr" id="venue-addr"></div>
+    <a class="btn outline" id="maps-btn" href="#" target="_blank" rel="noopener">Cómo llegar</a>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="nota-section" class="fade-up">
+    <h2>Un dato</h2>
+    <div class="nota-tag" id="nota-text"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="gallery-section" class="fade-up">
+    <h2>Momentos</h2>
+    <div class="gallery" id="gallery-grid"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="mensaje-section" class="fade-up">
+    <h2>Un mensaje</h2>
+    <p class="mensaje-texto" id="mensaje-texto"></p>
+    <div class="mensaje-firma" id="mensaje-firma"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="rsvp-section" class="fade-up">
+    <h2>Confirmá tu asistencia</h2>
+    <p class="rsvp-note" id="rsvp-note"></p>
+    <a class="btn" id="rsvp-btn" href="#" target="_blank" rel="noopener">Confirmar asistencia</a>
+  </section>
+
+  <footer class="fade-up">
+    <div class="footer-name" id="footer-name"></div>
+    <p style="font-size:.85rem; color:var(--carbon-suave); margin-top:10px;" id="footer-note"></p>
+  </footer>
+</div>
+
+<div class="config-flag">TEMPLATE · despedida-soltera-confetti v1</div>
+
+<script>
+/* ============================================================
+   CONFIG — esto es lo único que se edita por cada cliente.
+   ============================================================ */
+const CONFIG = {
+  novia: "Carla",
+  eyebrow: "Despedida de soltera",
+  fechaTexto: "6 de Diciembre, 2026",
+  fechaCountdown: "2026-12-06T20:00:00",
+  itinerario: [
+    { hora: "20:00", que: "Previa y brindis" },
+    { hora: "21:30", que: "Cena" },
+    { hora: "23:00", que: "Juegos y sorpresas" },
+    { hora: "00:30", que: "A bailar" },
+  ],
+  lugarNombre: "Terraza Soho",
+  lugarDireccion: "Costa Rica 5500, Buenos Aires",
+  mapsUrl: "https://maps.google.com/?q=Terraza+Soho",
+  nota: "Dress code: rosa o dorado, lo que más te guste. Es secreto — no le digas nada a la novia 🤫",
+  fotos: 4,
+  mensaje: "¡Se viene la última noche de soltera y quiero pasarla con las personas que más quiero! Prometo que va a ser una noche inolvidable.",
+  mensajeFirma: "Carla",
+  rsvpNota: "Por favor confirmá antes del 25 de Noviembre para reservar todo con tiempo.",
+  whatsappNumero: "5491100000000",
+  whatsappMensaje: "¡Hola! Confirmo mi asistencia a la despedida de Carla 🎉",
+  footerNota: "Gracias por sumarte a esta última noche de soltera.",
+};
+
+// --- Render ---
+document.getElementById('eyebrow-text').textContent = CONFIG.eyebrow;
+document.getElementById('novia-name').textContent = CONFIG.novia;
+document.getElementById('the-date').textContent = CONFIG.fechaTexto;
+document.getElementById('footer-name').textContent = CONFIG.novia;
+document.getElementById('footer-note').textContent = CONFIG.footerNota;
+document.getElementById('venue-name').textContent = CONFIG.lugarNombre;
+document.getElementById('venue-addr').textContent = CONFIG.lugarDireccion;
+document.getElementById('maps-btn').href = CONFIG.mapsUrl;
+document.getElementById('nota-text').textContent = CONFIG.nota;
+document.getElementById('mensaje-texto').textContent = CONFIG.mensaje;
+document.getElementById('mensaje-firma').textContent = CONFIG.mensajeFirma;
+document.getElementById('rsvp-note').textContent = CONFIG.rsvpNota;
+document.getElementById('rsvp-btn').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${encodeURIComponent(CONFIG.whatsappMensaje)}`;
+
+const itList = document.getElementById('itinerary-list');
+CONFIG.itinerario.forEach(item=>{
+  const div = document.createElement('div');
+  div.className = 'itinerary-item';
+  div.innerHTML = `<div class="itinerary-time">${item.hora}</div><div class="itinerary-what">${item.que}</div>`;
+  itList.appendChild(div);
+});
+
+const gallery = document.getElementById('gallery-grid');
+for(let i=0;i<CONFIG.fotos;i++){
+  const ph = document.createElement('div');
+  ph.className = 'ph';
+  ph.textContent = 'Foto ' + (i+1);
+  gallery.appendChild(ph);
+}
+
+// --- Elementos flotantes ---
+(function(){
+  const container = document.getElementById('floaties');
+  const emojis = ['💗', '🥂', '✨', '💍'];
+  const count = 9;
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'floatie';
+    const size = 15 + Math.random()*15;
+    el.style.left = (Math.random()*94) + '%';
+    el.style.fontSize = size + 'px';
+    el.textContent = emojis[i % emojis.length];
+    el.style.animationDuration = (14 + Math.random()*10) + 's';
+    el.style.animationDelay = (Math.random()*14) + 's';
+    container.appendChild(el);
+  }
+})();
+
+// --- Confetti al confirmar ---
+(function(){
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let raf = null;
+
+  function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+  resize();
+  addEventListener('resize', resize);
+
+  const colores = ['#F5A8C3', '#E0B33C', '#B48CD9', '#D96B96', '#fff'];
+
+  function burst(){
+    const originX = canvas.width / 2;
+    const originY = canvas.height * 0.35;
+    for(let i=0;i<120;i++){
+      const angle = Math.random()*Math.PI*2;
+      const speed = 3 + Math.random()*7;
+      particles.push({
+        x:originX, y:originY,
+        vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed - 3,
+        size:4+Math.random()*5,
+        color:colores[Math.floor(Math.random()*colores.length)],
+        rot:Math.random()*360, vr:(Math.random()-0.5)*12,
+        vida:0
+      });
+    }
+    if(!raf) animar();
+  }
+
+  function animar(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      p.vy += 0.12;
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.vida++;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size*0.6);
+      ctx.restore();
+    });
+    particles = particles.filter(p => p.y < canvas.height + 40 && p.vida < 260);
+    if(particles.length){ raf = requestAnimationFrame(animar); }
+    else { raf = null; ctx.clearRect(0,0,canvas.width,canvas.height); }
+  }
+
+  document.getElementById('rsvp-btn').addEventListener('click', burst);
+})();
+
+// --- Countdown ---
+function tick(){
+  const target = new Date(CONFIG.fechaCountdown);
+  const now = new Date();
+  let diff = Math.max(0, target - now);
+  document.getElementById('cd-d').textContent = String(Math.floor(diff/(1000*60*60*24))).padStart(2,'0');
+  document.getElementById('cd-h').textContent = String(Math.floor((diff/(1000*60*60))%24)).padStart(2,'0');
+  document.getElementById('cd-m').textContent = String(Math.floor((diff/(1000*60))%60)).padStart(2,'0');
+  document.getElementById('cd-s').textContent = String(Math.floor((diff/1000)%60)).padStart(2,'0');
+}
+tick(); setInterval(tick, 1000);
+
+// --- Fade up on scroll ---
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold:0.25});
+document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
