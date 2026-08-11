@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark only">
+<meta name="theme-color" content="#0B1130">
+<title>Misión espacial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Baloo+2:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     MOTOR DE PLANTILLA — CONFIG
+     Todo el contenido editable vive en el objeto CONFIG (abajo,
+     dentro del <script>). Los estilos de acá no deberían tocarse
+     para generar una invitación nueva: sólo se edita CONFIG.
+     Tema: espacio/astronautas genéricos (sin personajes con
+     marca), pensado para 6-9 años. Motivos vía emoji (🚀🪐⭐🌙)
+     — sin depender de clip art con licencia. Paleta de alto
+     contraste (fondo oscuro + acentos neón) a diferencia de los
+     subestilos más claros de 0-2 y 3-5 años.
+     ============================================================ */
+
+  :root{
+    --espacio: #0B1130;
+    --espacio-claro: #171F4D;
+    --cian: #4CC9F0;
+    --magenta: #F72585;
+    --oro: #FFD60A;
+    --texto: #E9ECFF;
+    --texto-suave: #A6ACD9;
+    color-scheme: dark;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; color-scheme:dark; background:var(--espacio); }
+  body{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:500;
+    color:var(--texto);
+    color-scheme:dark;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(76,201,240,0.12), transparent 35%),
+      radial-gradient(circle at 88% 25%, rgba(247,37,133,0.10), transparent 40%),
+      radial-gradient(circle at 25% 85%, rgba(255,214,10,0.08), transparent 40%),
+      linear-gradient(180deg, var(--espacio) 0%, #0E1440 55%, var(--espacio-claro) 140%);
+    background-attachment:fixed;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  h1,h2{ font-family:'Orbitron', sans-serif; font-weight:700; margin:0; }
+
+  .wrap{ max-width:480px; margin:0 auto; position:relative; z-index:1; }
+
+  section{ padding:64px 30px; text-align:center; position:relative; z-index:1; }
+
+  .fade-up{ opacity:0; transform:translateY(22px); transition:opacity .9s ease, transform .9s ease; }
+  .fade-up.visible{ opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce){ .fade-up{ opacity:1; transform:none; transition:none; } .floatie{ display:none; } }
+
+  /* ---------- Elementos flotantes de fondo (estrellas/cohete/planeta) ---------- */
+  .floaties{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .floatie{
+    position:absolute; bottom:-12%; opacity:0; line-height:1;
+    animation-name: floatUp; animation-timing-function: ease-in; animation-iteration-count: infinite;
+  }
+  @keyframes floatUp{
+    0%{ transform:translateY(0) translateX(0) rotate(0deg); opacity:0; }
+    8%{ opacity:.85; }
+    92%{ opacity:.6; }
+    100%{ transform:translateY(-112vh) translateX(28px) rotate(18deg); opacity:0; }
+  }
+  .twinkle{ position:absolute; border-radius:50%; background:var(--oro); opacity:.6; z-index:0; animation:twinkle 2.6s ease-in-out infinite; }
+  @keyframes twinkle{ 0%,100%{ opacity:.25; transform:scale(.8); } 50%{ opacity:.9; transform:scale(1.2); } }
+
+  /* ---------- Hero ---------- */
+  #hero{ min-height:92vh; display:flex; flex-direction:column; justify-content:center; padding-top:44px; }
+
+  .typed-title{
+    position:relative; display:inline-block;
+    font-family:'Orbitron', sans-serif;
+    font-size:.95rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--cian); margin-bottom:10px; min-height:1.4em;
+  }
+  .typed-title .ch{ display:inline-block; opacity:0; transform:translateY(6px); animation:chIn .35s ease forwards; }
+  .typed-title .ch.space{ width:.35em; }
+  @keyframes chIn{ to{ opacity:1; transform:translateY(0); } }
+  .typed-title::after{
+    content:""; display:inline-block; width:2px; height:1em;
+    background:var(--magenta); margin-left:3px; vertical-align:-2px;
+    animation:caretBlink .8s steps(1) infinite;
+  }
+  .typed-title.done::after{ animation:none; opacity:0; }
+  @keyframes caretBlink{ 50%{ opacity:0; } }
+
+  .kid-name{ font-size:3.4rem; line-height:1.05; font-weight:800; color:#fff; margin:8px 0 6px; text-shadow:0 0 18px rgba(76,201,240,0.5); }
+  .edad-tag{ display:inline-block; background:var(--magenta); color:#fff; font-family:'Orbitron', sans-serif; font-weight:700; font-size:.8rem; padding:6px 18px; border-radius:20px; margin-bottom:14px; }
+  .the-date{ font-size:1rem; font-weight:600; letter-spacing:.06em; color:var(--texto-suave); }
+  .scroll-hint{ margin-top:52px; font-size:.72rem; letter-spacing:.15em; text-transform:uppercase; color:var(--cian); opacity:.85; }
+
+  .divider{ width:60px; height:2px; background:var(--cian); margin:0 auto; opacity:.4; box-shadow:0 0 8px var(--cian); }
+
+  /* ---------- Countdown ---------- */
+  .countdown{ display:flex; justify-content:center; gap:14px; margin-top:26px; }
+  .cd-box{ min-width:56px; background:rgba(76,201,240,0.08); border:1px solid var(--cian); border-radius:12px; padding:10px 4px; }
+  .cd-num{ font-family:'Orbitron', sans-serif; font-weight:700; font-size:1.5rem; color:var(--cian); }
+  .cd-label{ font-size:.58rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--texto-suave); }
+
+  /* ---------- Itinerario / lugar ---------- */
+  .itinerary-item{ display:flex; align-items:flex-start; gap:16px; text-align:left; max-width:300px; margin:0 auto 22px; }
+  .itinerary-time{ font-family:'Orbitron', sans-serif; font-weight:700; font-size:.95rem; color:var(--magenta); min-width:60px; }
+  .itinerary-what{ font-size:.92rem; font-weight:500; color:var(--texto); }
+
+  .venue-name{ font-size:1.2rem; font-weight:700; color:var(--cian); margin-top:6px; }
+  .venue-addr{ font-size:.85rem; color:var(--texto-suave); margin-top:4px; }
+
+  .btn{
+    display:inline-block; margin-top:20px; padding:13px 30px;
+    background:var(--magenta); color:#fff;
+    text-decoration:none; font-family:'Orbitron', sans-serif; font-weight:700; font-size:.75rem; letter-spacing:.06em;
+    text-transform:uppercase; border-radius:22px; transition:background .25s ease, transform .15s ease;
+  }
+  .btn:hover{ background:var(--cian); color:var(--espacio); transform:translateY(-1px); }
+  .btn.outline{ background:transparent; border:2px solid var(--cian); color:var(--cian); }
+
+  .nota-tag{ display:inline-block; padding:12px 20px; background:rgba(76,201,240,0.08); border:1px solid var(--cian); border-radius:14px; font-size:.88rem; font-weight:500; margin-top:10px; max-width:300px; line-height:1.5; color:var(--texto); }
+
+  .gallery{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:24px; }
+  .ph{ aspect-ratio:1; background:rgba(255,255,255,0.03); border:1px dashed var(--cian); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:.68rem; font-weight:600; color:var(--texto-suave); letter-spacing:.04em; text-align:center; padding:8px; }
+
+  .mensaje-texto{ font-size:1rem; font-weight:500; line-height:1.8; max-width:310px; margin:20px auto 0; color:var(--texto); }
+  .mensaje-firma{ font-family:'Orbitron', sans-serif; font-weight:700; font-size:1.2rem; color:var(--oro); margin-top:14px; }
+
+  .rsvp-note{ font-size:.85rem; color:var(--texto-suave); max-width:280px; margin:14px auto 0; line-height:1.6; }
+
+  footer{ padding:56px 30px 76px; text-align:center; }
+  footer .footer-name{ font-family:'Orbitron', sans-serif; font-weight:700; font-size:1.8rem; color:var(--cian); }
+
+  .config-flag{
+    position:fixed; bottom:10px; right:10px; background:var(--cian); color:var(--espacio);
+    font-size:.6rem; padding:4px 8px; border-radius:8px; opacity:.6; font-family:'Baloo 2',sans-serif; z-index:5;
+  }
+</style>
+</head>
+<body>
+
+<div class="floaties" id="floaties"></div>
+
+<div class="wrap">
+  <section id="hero" class="fade-up">
+    <div class="typed-title" id="typedTitle"></div>
+    <h1 class="kid-name" id="kid-name"></h1>
+    <div class="edad-tag" id="edad-tag"></div>
+    <div class="the-date" id="the-date"></div>
+    <div class="scroll-hint">Deslizá para ver más ↓</div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="countdown-section" class="fade-up">
+    <h2>Cuenta regresiva 🚀</h2>
+    <div class="countdown">
+      <div class="cd-box"><div class="cd-num" id="cd-d">00</div><div class="cd-label">días</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-h">00</div><div class="cd-label">hs</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-m">00</div><div class="cd-label">min</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-s">00</div><div class="cd-label">seg</div></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="itinerary-section" class="fade-up">
+    <h2>La misión</h2>
+    <div id="itinerary-list" style="margin-top:26px;"></div>
+    <div class="venue-name" id="venue-name"></div>
+    <div class="venue-addr" id="venue-addr"></div>
+    <a class="btn outline" id="maps-btn" href="#" target="_blank" rel="noopener">Cómo llegar</a>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="nota-section" class="fade-up">
+    <h2>Un dato</h2>
+    <div class="nota-tag" id="nota-text"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="gallery-section" class="fade-up">
+    <h2>La tripulación</h2>
+    <div class="gallery" id="gallery-grid"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="mensaje-section" class="fade-up">
+    <h2>Nuestro mensaje</h2>
+    <p class="mensaje-texto" id="mensaje-texto"></p>
+    <div class="mensaje-firma" id="mensaje-firma"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="rsvp-section" class="fade-up">
+    <h2>Confirmá tu asistencia</h2>
+    <p class="rsvp-note" id="rsvp-note"></p>
+    <a class="btn" id="rsvp-btn" href="#" target="_blank" rel="noopener">Confirmar por WhatsApp</a>
+  </section>
+
+  <footer class="fade-up">
+    <div class="footer-name" id="footer-name"></div>
+    <p style="font-size:.85rem; color:var(--texto-suave); margin-top:10px;" id="footer-note"></p>
+  </footer>
+</div>
+
+<div class="config-flag">TEMPLATE · cumple-infantil-6-9-anos-espacial v1</div>
+
+<script>
+/* ============================================================
+   CONFIG — esto es lo único que se edita por cada cliente.
+   ============================================================ */
+const CONFIG = {
+  nombre: "Lucas",
+  tituloTipeo: "¡Misión espacial en marcha!",
+  edadTexto: "Cumple 7 años",
+  fechaTexto: "8 de Noviembre, 2026",
+  fechaCountdown: "2026-11-08T16:00:00",
+  itinerario: [
+    { hora: "16:00", que: "Despegue: recepción de invitados" },
+    { hora: "16:30", que: "Juegos de puntería y búsqueda del tesoro espacial" },
+    { hora: "18:00", que: "Torta y mesa dulce" },
+    { hora: "19:30", que: "Aterrizaje: cierre" },
+  ],
+  lugarNombre: "Salón Cosmos",
+  lugarDireccion: "Av. Rivadavia 3200, Buenos Aires",
+  mapsUrl: "https://maps.google.com/?q=Salon+Cosmos",
+  nota: "Va a haber juegos de puntería, una búsqueda del tesoro espacial y mesa dulce con temática de misión 🪐. ¡Vení con ropa cómoda!",
+  fotos: 4,
+  mensaje: "Lucas está preparando su nave para despegar hacia sus 7 años y quiere que seas parte de la tripulación. ¡Te esperamos para celebrar juntos!",
+  mensajeFirma: "Con cariño, Mamá y Papá",
+  rsvpNota: "Por favor confirmá la asistencia antes del 30 de Octubre para organizar todo con cariño.",
+  whatsappNumero: "5491100000000",
+  whatsappMensaje: "¡Hola! Confirmo mi asistencia a la misión espacial de Lucas 🚀",
+  footerNota: "Gracias por sumarte a esta misión.",
+};
+
+// --- Render ---
+document.getElementById('kid-name').textContent = CONFIG.nombre;
+document.getElementById('edad-tag').textContent = CONFIG.edadTexto;
+document.getElementById('the-date').textContent = CONFIG.fechaTexto;
+document.getElementById('footer-name').textContent = CONFIG.nombre;
+document.getElementById('footer-note').textContent = CONFIG.footerNota;
+document.getElementById('venue-name').textContent = CONFIG.lugarNombre;
+document.getElementById('venue-addr').textContent = CONFIG.lugarDireccion;
+document.getElementById('maps-btn').href = CONFIG.mapsUrl;
+document.getElementById('nota-text').textContent = CONFIG.nota;
+document.getElementById('mensaje-texto').textContent = CONFIG.mensaje;
+document.getElementById('mensaje-firma').textContent = CONFIG.mensajeFirma;
+document.getElementById('rsvp-note').textContent = CONFIG.rsvpNota;
+document.getElementById('rsvp-btn').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${encodeURIComponent(CONFIG.whatsappMensaje)}`;
+
+const itList = document.getElementById('itinerary-list');
+CONFIG.itinerario.forEach(item=>{
+  const div = document.createElement('div');
+  div.className = 'itinerary-item';
+  div.innerHTML = `<div class="itinerary-time">${item.hora}</div><div class="itinerary-what">${item.que}</div>`;
+  itList.appendChild(div);
+});
+
+const gallery = document.getElementById('gallery-grid');
+for(let i=0;i<CONFIG.fotos;i++){
+  const ph = document.createElement('div');
+  ph.className = 'ph';
+  ph.textContent = 'Foto ' + (i+1);
+  gallery.appendChild(ph);
+}
+
+// --- Elementos flotantes (estrellas/cohete/planeta/luna) ---
+(function(){
+  const container = document.getElementById('floaties');
+  const emojis = ['⭐', '🚀', '🪐', '🌙'];
+  const count = 10;
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'floatie';
+    const size = 16 + Math.random()*16;
+    el.style.left = (Math.random()*94) + '%';
+    el.style.fontSize = size + 'px';
+    el.textContent = emojis[i % emojis.length];
+    el.style.animationDuration = (13 + Math.random()*10) + 's';
+    el.style.animationDelay = (Math.random()*14) + 's';
+    container.appendChild(el);
+  }
+  // pequeñas estrellas titilando fijas en el fondo
+  const twCount = 14;
+  for(let i=0;i<twCount;i++){
+    const t = document.createElement('div');
+    t.className = 'twinkle';
+    const size = 2 + Math.random()*3;
+    t.style.width = size + 'px';
+    t.style.height = size + 'px';
+    t.style.left = (Math.random()*100) + '%';
+    t.style.top = (Math.random()*100) + '%';
+    t.style.animationDelay = (Math.random()*2.6) + 's';
+    container.appendChild(t);
+  }
+})();
+
+// --- Título con efecto de tipeo ---
+(function(){
+  const el = document.getElementById('typedTitle');
+  const text = CONFIG.tituloTipeo;
+  let i = 0;
+  function typeNext(){
+    if(i >= text.length){ el.classList.add('done'); return; }
+    const ch = text[i];
+    const span = document.createElement('span');
+    span.className = 'ch' + (ch === ' ' ? ' space' : '');
+    span.textContent = ch === ' ' ? ' ' : ch;
+    el.appendChild(span);
+    i++;
+    setTimeout(typeNext, 130);
+  }
+  setTimeout(typeNext, 500);
+})();
+
+// --- Countdown ---
+function tick(){
+  const target = new Date(CONFIG.fechaCountdown);
+  const now = new Date();
+  let diff = Math.max(0, target - now);
+  document.getElementById('cd-d').textContent = String(Math.floor(diff/(1000*60*60*24))).padStart(2,'0');
+  document.getElementById('cd-h').textContent = String(Math.floor((diff/(1000*60*60))%24)).padStart(2,'0');
+  document.getElementById('cd-m').textContent = String(Math.floor((diff/(1000*60))%60)).padStart(2,'0');
+  document.getElementById('cd-s').textContent = String(Math.floor((diff/1000)%60)).padStart(2,'0');
+}
+tick(); setInterval(tick, 1000);
+
+// --- Fade up on scroll ---
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold:0.25});
+document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>

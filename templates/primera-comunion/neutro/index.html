@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#FBF8F2">
+<title>Primera Comunión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Parisienne&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     MOTOR DE PLANTILLA — CONFIG
+     Todo el contenido editable vive en el objeto CONFIG (abajo,
+     dentro del <script>). Los estilos de acá no deberían tocarse
+     para generar una invitación nueva: sólo se edita CONFIG.
+     Variante NEUTRO (sin género) de la categoría primera comunión
+     — categoría distinta de bautismo (niño/a más grande, foco en
+     el día de la ceremonia y el traje/vestido). Paleta crema/
+     dorado/azul polvo, para diferenciarla del blanco/dorado/
+     celeste de bautismo. Motivos vía emoji (🕊️✝️🌾✨) — trigo en
+     vez de nube, símbolo tradicional de la comunión (pan/Eucaristía).
+     ============================================================ */
+
+  :root{
+    --crema: #FBF8F2;
+    --dorado: #B79A5E;
+    --dorado-osc: #93773E;
+    --azul-polvo: #B8CDDE;
+    --carbon: #4A4234;
+    color-scheme: light;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; color-scheme:light; background:var(--crema); }
+  body{
+    font-family:'Jost', sans-serif;
+    font-weight:300;
+    color:var(--carbon);
+    color-scheme:light;
+    background:
+      radial-gradient(circle at 15% 8%, rgba(255,255,255,0.7), transparent 35%),
+      radial-gradient(circle at 90% 22%, rgba(184,205,222,0.35), transparent 40%),
+      radial-gradient(circle at 20% 85%, rgba(255,255,255,0.4), transparent 40%),
+      linear-gradient(180deg, var(--crema) 0%, #F5EFE0 55%, #EDE2C4 140%);
+    background-attachment:fixed;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  h1,h2{ font-family:'Cormorant Garamond', serif; font-weight:500; margin:0; }
+  .script{ font-family:'Parisienne', cursive; font-weight:400; }
+
+  .wrap{ max-width:480px; margin:0 auto; position:relative; z-index:1; }
+
+  section{ padding:72px 32px; text-align:center; position:relative; z-index:1; }
+
+  .fade-up{ opacity:0; transform:translateY(24px); transition:opacity .9s ease, transform .9s ease; }
+  .fade-up.visible{ opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce){ .fade-up{ opacity:1; transform:none; transition:none; } .floatie{ display:none; } }
+
+  /* ---------- Elementos flotantes de fondo (paloma/cruz/trigo/brillo) ---------- */
+  .floaties{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .floatie{
+    position:absolute; bottom:-12%; opacity:0; line-height:1;
+    animation-name: floatUp; animation-timing-function: ease-in; animation-iteration-count: infinite;
+  }
+  @keyframes floatUp{
+    0%{ transform:translateY(0) translateX(0) rotate(0deg); opacity:0; }
+    8%{ opacity:.55; }
+    92%{ opacity:.4; }
+    100%{ transform:translateY(-112vh) translateX(22px) rotate(8deg); opacity:0; }
+  }
+
+  /* ---------- Hero ---------- */
+  #hero{ min-height:92vh; display:flex; flex-direction:column; justify-content:center; padding-top:48px; }
+  .eyebrow{ letter-spacing:.28em; text-transform:uppercase; font-size:.68rem; color:var(--dorado-osc); margin-bottom:18px; }
+  .kid-name{ font-family:'Parisienne', cursive; font-size:3.4rem; line-height:1.1; color:var(--dorado-osc); margin:4px 0 16px; }
+  .the-date{ margin-top:6px; font-size:1.05rem; letter-spacing:.1em; color:var(--carbon); }
+  .scroll-hint{ margin-top:56px; font-size:.75rem; letter-spacing:.15em; color:var(--dorado); text-transform:uppercase; }
+
+  .divider{ width:1px; height:56px; background:var(--dorado); margin:0 auto; opacity:.5; }
+
+  /* ---------- Countdown ---------- */
+  .countdown{ display:flex; justify-content:center; gap:18px; margin-top:28px; }
+  .cd-box{ min-width:56px; }
+  .cd-num{ font-family:'Cormorant Garamond', serif; font-size:2.1rem; color:var(--dorado-osc); }
+  .cd-label{ font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:var(--dorado); }
+
+  /* ---------- Itinerario / lugar ---------- */
+  .itinerary-item{ display:flex; align-items:flex-start; gap:16px; text-align:left; max-width:320px; margin:0 auto 26px; }
+  .itinerary-time{ font-family:'Cormorant Garamond', serif; font-size:1.15rem; color:var(--dorado-osc); min-width:64px; }
+  .itinerary-what{ font-size:.95rem; }
+
+  .venue-name{ font-size:1.4rem; color:var(--dorado-osc); margin-top:6px; }
+  .venue-addr{ font-size:.85rem; color:#8a7d6e; margin-top:4px; }
+
+  .btn{
+    display:inline-block; margin-top:20px; padding:13px 30px;
+    background:var(--dorado-osc); color:#fff;
+    text-decoration:none; font-size:.78rem; letter-spacing:.12em;
+    text-transform:uppercase; border-radius:2px;
+    transition:background .25s ease;
+  }
+  .btn:hover{ background:var(--dorado); }
+  .btn.outline{ background:transparent; border:1px solid var(--dorado-osc); color:var(--dorado-osc); }
+
+  .nota-tag{ display:inline-block; padding:10px 20px; border:1px solid var(--azul-polvo); background:rgba(184,205,222,.25); border-radius:20px; font-size:.85rem; margin-top:10px; max-width:300px; line-height:1.5; }
+
+  .gallery{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:24px; }
+  .ph{ aspect-ratio:1; background:rgba(255,255,255,.6); border:1px solid var(--dorado); display:flex; align-items:center; justify-content:center; font-size:.65rem; color:#8a7d6e; letter-spacing:.08em; text-align:center; padding:8px; }
+
+  .mensaje-texto{ font-size:1rem; line-height:1.8; max-width:320px; margin:22px auto 0; color:#4a4032; font-style:italic; }
+  .mensaje-firma{ font-size:1.6rem; color:var(--dorado-osc); margin-top:16px; }
+
+  .rsvp-note{ font-size:.85rem; color:#8a7d6e; max-width:280px; margin:14px auto 0; line-height:1.6; }
+
+  footer{ padding:60px 32px 80px; text-align:center; }
+  footer .script{ font-size:2.2rem; color:var(--dorado-osc); }
+
+  .config-flag{
+    position:fixed; bottom:10px; right:10px; background:var(--carbon); color:var(--crema);
+    font-size:.6rem; padding:4px 8px; border-radius:3px; opacity:.55; font-family:'Jost',sans-serif; z-index:5;
+  }
+</style>
+</head>
+<body>
+
+<div class="floaties" id="floaties"></div>
+
+<div class="wrap">
+  <section id="hero" class="fade-up">
+    <div class="eyebrow" id="eyebrow-text"></div>
+    <h1 class="kid-name" id="kid-name"></h1>
+    <div class="the-date" id="the-date"></div>
+    <div class="scroll-hint">Deslizá para ver más ↓</div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="countdown-section" class="fade-up">
+    <h2>Falta poco</h2>
+    <div class="countdown">
+      <div class="cd-box"><div class="cd-num" id="cd-d">00</div><div class="cd-label">días</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-h">00</div><div class="cd-label">hs</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-m">00</div><div class="cd-label">min</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-s">00</div><div class="cd-label">seg</div></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="itinerary-section" class="fade-up">
+    <h2>El día</h2>
+    <div id="itinerary-list" style="margin-top:28px;"></div>
+    <div class="venue-name" id="venue-name"></div>
+    <div class="venue-addr" id="venue-addr"></div>
+    <a class="btn outline" id="maps-btn" href="#" target="_blank" rel="noopener">Cómo llegar</a>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="nota-section" class="fade-up">
+    <h2>Un dato</h2>
+    <div class="nota-tag" id="nota-text"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="gallery-section" class="fade-up">
+    <h2>Momentos</h2>
+    <div class="gallery" id="gallery-grid"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="mensaje-section" class="fade-up">
+    <h2>Nuestro mensaje</h2>
+    <p class="mensaje-texto" id="mensaje-texto"></p>
+    <div class="script mensaje-firma" id="mensaje-firma"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="rsvp-section" class="fade-up">
+    <h2>Confirmá tu asistencia</h2>
+    <p class="rsvp-note" id="rsvp-note"></p>
+    <a class="btn" id="rsvp-btn" href="#" target="_blank" rel="noopener">Confirmar por WhatsApp</a>
+  </section>
+
+  <footer class="fade-up">
+    <div class="script" id="footer-name"></div>
+    <p style="font-size:.85rem; color:#8a7d6e; margin-top:10px;" id="footer-note"></p>
+  </footer>
+</div>
+
+<div class="config-flag">TEMPLATE · primera-comunion-neutro v1</div>
+
+<script>
+/* ============================================================
+   CONFIG — esto es lo único que se edita por cada cliente.
+   ============================================================ */
+const CONFIG = {
+  nombre: "Renata",
+  eyebrow: "Nos acompaña en su primera comunión",
+  fechaTexto: "24 de Octubre, 2026",
+  fechaCountdown: "2026-10-24T10:30:00",
+  itinerario: [
+    { hora: "10:30", que: "Misa en Parroquia Santa Rosa" },
+    { hora: "12:00", que: "Recepción y brindis" },
+    { hora: "13:00", que: "Almuerzo" },
+    { hora: "16:00", que: "Torta y cierre" },
+  ],
+  lugarNombre: "Salón Jardín del Sol",
+  lugarDireccion: "Av. Rivadavia 3200, Buenos Aires",
+  mapsUrl: "https://maps.google.com/?q=Salon+Jardin+del+Sol",
+  nota: "Vestimenta: elegante sport. Tu presencia es el mejor regalo para este día tan especial.",
+  fotos: 4,
+  mensaje: "Con mucha alegría queremos compartir el día de su Primera Comunión y nos encantaría que nos acompañes en este momento tan importante para nuestra familia.",
+  mensajeFirma: "Con amor, sus padres",
+  rsvpNota: "Por favor confirmá tu asistencia antes del 10 de Octubre para organizar todo con cariño.",
+  whatsappNumero: "5491100000000",
+  whatsappMensaje: "¡Hola! Confirmo mi asistencia a la primera comunión de Renata 🕊️",
+  footerNota: "Gracias por ser parte de este día.",
+};
+
+// --- Render ---
+document.getElementById('eyebrow-text').textContent = CONFIG.eyebrow;
+document.getElementById('kid-name').textContent = CONFIG.nombre;
+document.getElementById('the-date').textContent = CONFIG.fechaTexto;
+document.getElementById('footer-name').textContent = CONFIG.nombre;
+document.getElementById('footer-note').textContent = CONFIG.footerNota;
+document.getElementById('venue-name').textContent = CONFIG.lugarNombre;
+document.getElementById('venue-addr').textContent = CONFIG.lugarDireccion;
+document.getElementById('maps-btn').href = CONFIG.mapsUrl;
+document.getElementById('nota-text').textContent = CONFIG.nota;
+document.getElementById('mensaje-texto').textContent = CONFIG.mensaje;
+document.getElementById('mensaje-firma').textContent = CONFIG.mensajeFirma;
+document.getElementById('rsvp-note').textContent = CONFIG.rsvpNota;
+document.getElementById('rsvp-btn').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${encodeURIComponent(CONFIG.whatsappMensaje)}`;
+
+const itList = document.getElementById('itinerary-list');
+CONFIG.itinerario.forEach(item=>{
+  const div = document.createElement('div');
+  div.className = 'itinerary-item';
+  div.innerHTML = `<div class="itinerary-time">${item.hora}</div><div class="itinerary-what">${item.que}</div>`;
+  itList.appendChild(div);
+});
+
+const gallery = document.getElementById('gallery-grid');
+for(let i=0;i<CONFIG.fotos;i++){
+  const ph = document.createElement('div');
+  ph.className = 'ph';
+  ph.textContent = 'Foto ' + (i+1);
+  gallery.appendChild(ph);
+}
+
+// --- Elementos flotantes (paloma/cruz/trigo/brillo) ---
+(function(){
+  const container = document.getElementById('floaties');
+  const emojis = ['🕊️', '✝️', '🌾', '✨'];
+  const count = 8;
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'floatie';
+    const size = 16 + Math.random()*14;
+    el.style.left = (Math.random()*94) + '%';
+    el.style.fontSize = size + 'px';
+    el.textContent = emojis[i % emojis.length];
+    el.style.animationDuration = (15 + Math.random()*10) + 's';
+    el.style.animationDelay = (Math.random()*14) + 's';
+    container.appendChild(el);
+  }
+})();
+
+// --- Countdown ---
+function tick(){
+  const target = new Date(CONFIG.fechaCountdown);
+  const now = new Date();
+  let diff = Math.max(0, target - now);
+  document.getElementById('cd-d').textContent = String(Math.floor(diff/(1000*60*60*24))).padStart(2,'0');
+  document.getElementById('cd-h').textContent = String(Math.floor((diff/(1000*60*60))%24)).padStart(2,'0');
+  document.getElementById('cd-m').textContent = String(Math.floor((diff/(1000*60))%60)).padStart(2,'0');
+  document.getElementById('cd-s').textContent = String(Math.floor((diff/1000)%60)).padStart(2,'0');
+}
+tick(); setInterval(tick, 1000);
+
+// --- Fade up on scroll ---
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold:0.25});
+document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>

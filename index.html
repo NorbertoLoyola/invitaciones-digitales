@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#FAF7F2">
+<title>Invitaciones Digitales · Catálogo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --crema: #FAF7F2;
+    --carbon: #2B2620;
+    --carbon-suave: #6B6153;
+    --dorado: #B08D57;
+    --dorado-osc: #8F6F3D;
+    --linea: #E4DCCB;
+    color-scheme: light;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; color-scheme:light; background:var(--crema); }
+  body{
+    font-family:'Inter', sans-serif;
+    color:var(--carbon);
+    background:var(--crema);
+    color-scheme:light;
+  }
+  h1,h2,h3{ font-family:'Fraunces', serif; font-weight:600; margin:0; }
+
+  header{ text-align:center; padding:80px 24px 56px; max-width:640px; margin:0 auto; }
+  .eyebrow{ letter-spacing:.24em; text-transform:uppercase; font-size:.72rem; color:var(--dorado-osc); margin-bottom:14px; }
+  header h1{ font-size:2.6rem; line-height:1.15; }
+  header p{ margin-top:16px; font-size:1.02rem; color:var(--carbon-suave); line-height:1.6; }
+
+  main{ max-width:1080px; margin:0 auto; padding:0 24px 100px; }
+
+  .categoria{ margin-top:64px; }
+  .categoria-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:24px; border-bottom:1px solid var(--linea); padding-bottom:14px; }
+  .categoria-head h2{ font-size:1.5rem; }
+  .categoria-head span{ font-size:.85rem; color:var(--carbon-suave); }
+
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:18px; }
+
+  .card{
+    display:flex; flex-direction:column; justify-content:space-between;
+    background:#fff; border:1px solid var(--linea); border-radius:14px;
+    padding:22px; text-decoration:none; color:inherit;
+    transition:transform .18s ease, box-shadow .18s ease;
+    position:relative; overflow:hidden;
+  }
+  .card::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:6px;
+    background:var(--swatch, var(--dorado));
+  }
+  .card:hover{ transform:translateY(-3px); box-shadow:0 10px 24px rgba(43,38,32,0.1); }
+
+  .card-eyebrow{ font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--carbon-suave); margin-bottom:8px; }
+  .card h3{ font-size:1.2rem; margin-bottom:8px; }
+  .card p{ font-size:.88rem; color:var(--carbon-suave); line-height:1.5; margin-bottom:18px; }
+  .card .cta{ font-size:.82rem; font-weight:600; color:var(--dorado-osc); }
+  .card .cta::after{ content:" →"; }
+
+  footer{ text-align:center; padding:48px 24px 80px; color:var(--carbon-suave); font-size:.85rem; }
+  footer a{ color:var(--dorado-osc); }
+  footer .bonus{ margin-top:10px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Catálogo de demostración</div>
+  <h1>Invitaciones Digitales</h1>
+  <p>Invitaciones web a medida para cada momento especial. Elegí una categoría, tocá un estilo y se abre la invitación completa en una pestaña nueva.</p>
+</header>
+
+<main>
+
+  <section class="categoria">
+    <div class="categoria-head"><h2>Bodas</h2><span>2 estilos</span></div>
+    <div class="grid">
+      <a class="card" style="--swatch:#3F4F38" href="templates/bodas/rustico/index.html" target="_blank" rel="noopener">
+        <div>
+          <div class="card-eyebrow">Bodas</div>
+          <h3>Rústico / Campo</h3>
+          <p>Verde eucalipto, terracota y pergamino. Mensaje de los novios, dress code, itinerario y confirmación por WhatsApp.</p>
+        </div>
+        <div class="cta">Ver invitación</div>
+      </a>
+      <a class="card" style="--swatch:#6B2737" href="templates/bodas/botanico/index.html" target="_blank" rel="noopener">
+        <div>
+          <div class="card-eyebrow">Bodas</div>
+          <h3>Botánico</h3>
+          <p>Vino, salvia y crema, con hojas y flores secas flotando. Tendencia #1 de bodas 2026, más "moody" que el rústico.</p>
+        </div>
+        <div class="cta">Ver invitación</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="categoria">
+    <div class="categoria-head"><h2>15 años</h2><span>1 estilo</span></div>
+    <div class="grid">
+      <a class="card" style="--swatch:#8C2F52" href="templates/quince/index.html" target="_blank" rel="noopener">
+        <div>
+          <div class="card-eyebrow">15 años</div>
+          <h3>Glam / Fiesta</h3>
+          <p>Noche, champagne y magenta, con el número "15" como reflector de fondo. Padrinos, itinerario y dress code.</p>
+        </div>
+        <div class="cta">Ver invitación</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="categoria">
+    <div class="categoria-head"><h2>Cumpleaños infantil</h2><span>4 estilos, por rango de edad</span></div>
+    <div class="grid">
+      <a class="card" style="--swatch:#D98A9A" href="templates/cumple-infantil/0-2-anos/index.html" target="_blank" rel="noopener">
+        <div>
+          <div class="card-eyebrow">0–2 años</div>
+          <h3>Pastel</h3>
+          <p>Rosa, crema y celeste suave, con globitos flotando de fondo. Estilo heredado de la primera invitación de la familia.</p>
+        </div>
+        <div class="cta">Ver invitación</div>
+      </a>
+      <a class="card" style="--swatch:#3FA34D" href="templates/cumple-infantil/3-5-anos/index.html" target="_blank" rel="noopener">
+        <div>
+          <div class="card-eyebrow">3–5 años</div>
+          <h3>Selva</h3>
+          <p>Verde, amarillo y turquesa vibrantes. Hojas, mariposas y huellitas flotando — sin personajes de marca.</p>
+        </div>
+        <div class="cta">Ver invitación</div>
+      </a>
+      <a class="card" style="--swatch:#4CC9F0" href="templates/cumple-infantil/6-9-anos/index.html" target="_blank" rel="noopener">
+        <div>
+          <div class="card-eyebrow">6–9 años</div>
+          <h3>Misión espacial</h3>
+          <p>Fondo oscuro con acentos neón cian y magenta. Cohetes, planetas y estrellas titilando de fondo.</p>
+        </div>
+        <div class="cta">Ver invitación</div>
+      </a>
+      <a class="card" style="--swatch:#39FF88" href="templates/cumple-infantil/10-12-anos/index.html" target="_blank" rel="noopener">
+        <div>
+          <div class="card-eyebrow">10–12 años</div>
+          <h3>Gamer</h3>
+          <p>Estética pixel-art en negro y neón, tipografía retro 8-bit. La más "grande" de la categoría.</p>
+        </div>
+        <div class="cta">Ver invitación</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="categoria">
+    <div class="categoria-head"><h2>Baby shower</h2><span>1 estilo (neutro)</span></div>
+    <div class="grid">
+      <a class="card" style="--swatch:#A8B79A" href="templates/baby-shower/neutro/index.html" target="_blank" rel="noopener">
+        <div>
+          <div class="card-eyebrow">Baby shower · Neutro</div>
+          <h3>Boho</h3>
+          <p>Salvia, mostaza y crema. Nubes y estrellas flotando, con lista de regalos y dress code incluidos.</p>
+        </div>
+        <div class="cta">Ver invitación</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="categoria">
+    <div class="categoria-head"><h2>Bautismo</h2><span>1 estilo (neutro)</span></div>
+    <div class="grid">
+      <a class="card" style="--swatch:#C9A66B" href="templates/bautismo/neutro/index.html" target="_blank" rel="noopener">
+        <div>
+          <div class="card-eyebrow">Bautismo · Neutro</div>
+          <h3>Elegante</h3>
+          <p>Blanco, dorado y celeste suave. Paloma y cruz sutiles, con ceremonia y recepción en el mismo itinerario.</p>
+        </div>
+        <div class="cta">Ver invitación</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="categoria">
+    <div class="categoria-head"><h2>Primera comunión</h2><span>1 estilo (neutro)</span></div>
+    <div class="grid">
+      <a class="card" style="--swatch:#B79A5E" href="templates/primera-comunion/neutro/index.html" target="_blank" rel="noopener">
+        <div>
+          <div class="card-eyebrow">Primera comunión · Neutro</div>
+          <h3>Elegante</h3>
+          <p>Crema, dorado y azul polvo, con trigo como motivo tradicional de la Eucaristía. Categoría nueva, distinta de bautismo.</p>
+        </div>
+        <div class="cta">Ver invitación</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div>Catálogo interno — cada invitación tiene datos de ejemplo, listos para reemplazar por el motor de plantillas.</div>
+  <div class="bonus"><a href="base-aitana/index.html" target="_blank" rel="noopener">Ver la invitación original que inspiró todo esto →</a></div>
+</footer>
+
+</body>
+</html>

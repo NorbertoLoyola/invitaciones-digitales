@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#EDE7D6">
+<title>Nos casamos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Parisienne&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     MOTOR DE PLANTILLA — CONFIG
+     Todo el contenido editable vive en el objeto CONFIG (abajo,
+     dentro del <script>). Los estilos de acá no deberían tocarse
+     para generar una invitación nueva: sólo se edita CONFIG.
+     ============================================================ */
+
+  :root{
+    --verde-eucalipto: #3F4F38;
+    --verde-salvia: #8B9B78;
+    --pergamino: #EDE7D6;
+    --pergamino-osc: #E1D8C0;
+    --terracota: #B17A5E;
+    --carbon: #2A241D;
+    --oro: #A6883F;
+    color-scheme: light;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--pergamino);
+    color: var(--carbon);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  h1,h2,h3{ font-family:'Cormorant Garamond', serif; font-weight:500; margin:0; }
+  .script{ font-family:'Parisienne', cursive; font-weight:400; }
+
+  .wrap{ max-width: 480px; margin: 0 auto; position: relative; }
+
+  section{
+    position:relative; z-index:1;
+    padding: 72px 32px;
+    text-align:center;
+  }
+
+  .fade-up{
+    opacity:0; transform: translateY(24px);
+    transition: opacity .9s ease, transform .9s ease;
+  }
+  .fade-up.visible{ opacity:1; transform:none; }
+
+  @media (prefers-reduced-motion: reduce){
+    .fade-up{ opacity:1; transform:none; transition:none; }
+  }
+
+  /* Hero */
+  #hero{ min-height: 92vh; display:flex; flex-direction:column; justify-content:center; padding-top:48px; }
+  .eyebrow{ letter-spacing:.28em; text-transform:uppercase; font-size:.68rem; color:var(--verde-eucalipto); margin-bottom:18px; }
+  .names{ font-size:3.1rem; line-height:1.05; color:var(--verde-eucalipto); }
+  .amp{ display:block; font-size:2rem; color:var(--terracota); margin:2px 0; }
+  .the-date{ margin-top:22px; font-size:1.05rem; letter-spacing:.12em; color:var(--carbon); }
+  .scroll-hint{ margin-top:56px; font-size:.75rem; letter-spacing:.15em; color:var(--verde-salvia); text-transform:uppercase; }
+
+  /* Divider */
+  .divider{ width:1px; height:56px; background:var(--verde-salvia); margin:0 auto; opacity:.5; }
+
+  /* Countdown */
+  .countdown{ display:flex; justify-content:center; gap:18px; margin-top:28px; }
+  .cd-box{ min-width:56px; }
+  .cd-num{ font-family:'Cormorant Garamond', serif; font-size:2.1rem; color:var(--verde-eucalipto); }
+  .cd-label{ font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:var(--terracota); }
+
+  /* Itinerary */
+  .itinerary-item{ display:flex; align-items:flex-start; gap:16px; text-align:left; max-width:320px; margin:0 auto 26px; }
+  .itinerary-time{ font-family:'Cormorant Garamond', serif; font-size:1.15rem; color:var(--terracota); min-width:64px; }
+  .itinerary-what{ font-size:.95rem; }
+
+  .venue-name{ font-size:1.4rem; color:var(--verde-eucalipto); margin-top:6px; }
+  .venue-addr{ font-size:.85rem; color:#5a5044; margin-top:4px; }
+
+  .btn{
+    display:inline-block; margin-top:20px; padding:13px 30px;
+    background: var(--verde-eucalipto); color: var(--pergamino);
+    text-decoration:none; font-size:.78rem; letter-spacing:.12em;
+    text-transform:uppercase; border-radius:2px;
+    transition: background .25s ease;
+  }
+  .btn:hover{ background: var(--terracota); }
+  .btn.outline{ background:transparent; border:1px solid var(--verde-eucalipto); color:var(--verde-eucalipto); }
+
+  .dresscode-tag{ display:inline-block; padding:6px 18px; border:1px solid var(--verde-salvia); border-radius:20px; font-size:.8rem; margin-top:10px; }
+
+  .gallery{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:24px; }
+  .ph{ aspect-ratio:1; background: var(--pergamino-osc); border:1px solid var(--verde-salvia); display:flex; align-items:center; justify-content:center; font-size:.65rem; color:#7a7160; letter-spacing:.08em; text-align:center; padding:8px; }
+
+  .rsvp-note{ font-size:.85rem; color:#5a5044; max-width:280px; margin:14px auto 0; line-height:1.6; }
+
+  .mensaje-texto{ font-size:1rem; line-height:1.8; max-width:320px; margin:22px auto 0; color:#3a332a; font-style:italic; }
+  .mensaje-firma{ font-size:1.6rem; color:var(--verde-eucalipto); margin-top:16px; }
+
+  footer{ padding: 60px 32px 80px; text-align:center; }
+  footer .script{ font-size:2.2rem; color:var(--verde-eucalipto); }
+
+  .config-flag{
+    position:fixed; bottom:10px; right:10px; background:var(--carbon); color:var(--pergamino);
+    font-size:.6rem; padding:4px 8px; border-radius:3px; opacity:.55; font-family:'Jost',sans-serif; z-index:5;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <section id="hero" class="fade-up">
+    <div class="eyebrow" id="eyebrow-text"></div>
+    <h1 class="names">
+      <span id="name-one"></span>
+      <span class="amp script">&amp;</span>
+      <span id="name-two"></span>
+    </h1>
+    <div class="the-date" id="the-date"></div>
+    <div class="scroll-hint">Deslizá para ver más ↓</div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="countdown-section" class="fade-up">
+    <h2>Falta poco</h2>
+    <div class="countdown">
+      <div class="cd-box"><div class="cd-num" id="cd-d">00</div><div class="cd-label">días</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-h">00</div><div class="cd-label">hs</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-m">00</div><div class="cd-label">min</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-s">00</div><div class="cd-label">seg</div></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="itinerary-section" class="fade-up">
+    <h2>El gran día</h2>
+    <div id="itinerary-list" style="margin-top:28px;"></div>
+    <div class="venue-name" id="venue-name"></div>
+    <div class="venue-addr" id="venue-addr"></div>
+    <a class="btn outline" id="maps-btn" href="#" target="_blank" rel="noopener">Cómo llegar</a>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="dresscode-section" class="fade-up">
+    <h2>Dress code</h2>
+    <div class="dresscode-tag" id="dresscode-text"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="gallery-section" class="fade-up">
+    <h2>Nosotros</h2>
+    <div class="gallery" id="gallery-grid"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="mensaje-section" class="fade-up">
+    <h2>Nuestro mensaje</h2>
+    <p class="mensaje-texto" id="mensaje-texto"></p>
+    <div class="script mensaje-firma" id="mensaje-firma"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="rsvp-section" class="fade-up">
+    <h2>Confirmá tu asistencia</h2>
+    <p class="rsvp-note" id="rsvp-note"></p>
+    <a class="btn" id="rsvp-btn" href="#" target="_blank" rel="noopener">Confirmar por WhatsApp</a>
+  </section>
+
+  <footer class="fade-up">
+    <div class="script" id="footer-names"></div>
+    <p style="font-size:.85rem; color:#5a5044; margin-top:10px;" id="footer-note"></p>
+  </footer>
+</div>
+
+<div class="config-flag">TEMPLATE · bodas-rustico v2</div>
+
+<script>
+/* ============================================================
+   CONFIG — esto es lo único que se edita por cada cliente.
+   En la versión self-serve, este objeto vendría del formulario
+   o del panel de edición (n8n / dashboard) en vez de estar
+   hardcodeado acá.
+   ============================================================ */
+const CONFIG = {
+  nombreUno: "Valentina",
+  nombreDos: "Tomás",
+  eyebrow: "Nos casamos",
+  fechaTexto: "14 de Marzo, 2027",
+  fechaCountdown: "2027-03-14T18:00:00",
+  itinerario: [
+    { hora: "18:00", que: "Ceremonia civil, jardín principal" },
+    { hora: "19:30", que: "Recepción y brindis" },
+    { hora: "21:00", que: "Cena" },
+    { hora: "23:00", que: "Fiesta y baile" },
+  ],
+  lugarNombre: "Estancia La Candelaria",
+  lugarDireccion: "Ruta 6, Km 44, Buenos Aires",
+  mapsUrl: "https://maps.google.com/?q=Estancia+La+Candelaria",
+  dressCode: "Elegante campestre",
+  fotos: 4,
+  mensaje: "Después de años de historias compartidas, llegó el momento de decir que sí para siempre. Nos encantaría que seas parte de este día tan especial para nosotros.",
+  mensajeFirma: "Valentina & Tomás",
+  rsvpNota: "Por favor confirmá tu asistencia antes del 1 de Febrero para organizar todo con cariño.",
+  whatsappNumero: "5491100000000",
+  whatsappMensaje: "¡Hola! Confirmo mi asistencia a la boda de Valentina y Tomás 💛",
+  footerNota: "Con amor, gracias por acompañarnos.",
+};
+
+// --- Render ---
+document.getElementById('eyebrow-text').textContent = CONFIG.eyebrow;
+document.getElementById('name-one').textContent = CONFIG.nombreUno;
+document.getElementById('name-two').textContent = CONFIG.nombreDos;
+document.getElementById('the-date').textContent = CONFIG.fechaTexto;
+document.getElementById('footer-names').textContent = CONFIG.nombreUno + ' & ' + CONFIG.nombreDos;
+document.getElementById('footer-note').textContent = CONFIG.footerNota;
+document.getElementById('venue-name').textContent = CONFIG.lugarNombre;
+document.getElementById('venue-addr').textContent = CONFIG.lugarDireccion;
+document.getElementById('maps-btn').href = CONFIG.mapsUrl;
+document.getElementById('dresscode-text').textContent = CONFIG.dressCode;
+document.getElementById('mensaje-texto').textContent = CONFIG.mensaje;
+document.getElementById('mensaje-firma').textContent = CONFIG.mensajeFirma;
+document.getElementById('rsvp-note').textContent = CONFIG.rsvpNota;
+document.getElementById('rsvp-btn').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${encodeURIComponent(CONFIG.whatsappMensaje)}`;
+
+const itList = document.getElementById('itinerary-list');
+CONFIG.itinerario.forEach(item=>{
+  const div = document.createElement('div');
+  div.className = 'itinerary-item';
+  div.innerHTML = `<div class="itinerary-time">${item.hora}</div><div class="itinerary-what">${item.que}</div>`;
+  itList.appendChild(div);
+});
+
+const gallery = document.getElementById('gallery-grid');
+for(let i=0;i<CONFIG.fotos;i++){
+  const ph = document.createElement('div');
+  ph.className = 'ph';
+  ph.textContent = 'Foto ' + (i+1);
+  gallery.appendChild(ph);
+}
+
+// --- Countdown ---
+function tick(){
+  const target = new Date(CONFIG.fechaCountdown);
+  const now = new Date();
+  let diff = Math.max(0, target - now);
+  document.getElementById('cd-d').textContent = String(Math.floor(diff/(1000*60*60*24))).padStart(2,'0');
+  document.getElementById('cd-h').textContent = String(Math.floor((diff/(1000*60*60))%24)).padStart(2,'0');
+  document.getElementById('cd-m').textContent = String(Math.floor((diff/(1000*60))%60)).padStart(2,'0');
+  document.getElementById('cd-s').textContent = String(Math.floor((diff/1000)%60)).padStart(2,'0');
+}
+tick(); setInterval(tick, 1000);
+
+// --- Fade up on scroll ---
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold:0.25});
+document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
