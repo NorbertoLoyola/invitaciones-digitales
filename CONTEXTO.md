@@ -67,6 +67,39 @@ Alternativas:
 
 **Nota (2026-08-10)**: el usuario pidió explícitamente ignorar el copyright ("no será algo masivo, es para ofrecer por la zona"). Se mantuvo la regla igual — el riesgo de infracción de marca no depende de la escala del negocio, y Disney en particular persigue activamente a vendedores chicos/locales. En vez de usar personajes con marca, la respuesta fue profundizar en el eje que sí escala sin riesgo: más estilos con **animaciones distintas** (sobre que se abre, confetti, carrusel, flip card), todos con temática genérica.
 
+## Rediseño de la home/catálogo (2026-08-11)
+
+Pasó de ser un "catálogo de demostración" interno a la vidriera real que va a ver el cliente para elegir estilo (pensado para promocionar por Instagram). Cambios:
+
+- **Paleta/tipografía nueva**: terracota + ciruela + dorado, con Fraunces + Parisienne (script) + Jost — las mismas familias que ya usan varios templates individuales, para que la vidriera se sienta parte de la misma marca.
+- **Sección "Cómo funciona"** (3 pasos: elegís estilo → contás tus datos → recibís tu invitación) — construye confianza como página de producto real, no solo demo.
+- **Catálogo reescrito data-driven** (array `CATALOGO` en JS) en vez de HTML repetido a mano — más fácil de mantener a medida que se sumen estilos.
+- **Cada card tiene dos CTA**: "Ver ejemplo" (como antes) + **"Elegir este estilo"** (nuevo). Este último es el punto de enganche para venta: hoy abre WhatsApp con un mensaje pre-cargado nombrando el estilo elegido; el día que se sume Mercado Pago (o cualquier otro cobro), alcanza con completar el campo `mpLink` de ese item en el array — no hace falta tocar el resto del HTML/JS. Ningún precio se inventó ni se mostró — no había una lista de precios definida por estilo, así que no se puso ninguna cifra falsa.
+
+### Segunda vuelta del rediseño (mismo día): hero con celular + beneficios + testimonios
+
+- **Se sacó la animación de íconos flotando del hero** — pedido explícito de no repetir el mismo recurso visual que ya usan los templates individuales.
+- **Se agregó un mockup de celular en el hero** con `<iframe>` de las invitaciones reales rotando cada ~4s (crossfade entre dos iframes superpuestos), destacando 5 estilos variados (bodas botánico, 15 glam, cumple dulce, despedida confetti, aniversario carrusel). Es contenido real (las invitaciones en vivo), no capturas estáticas — se actualiza solo si cambia algún template.
+- **Sección "Por qué una invitación digital"**: 4 beneficios reales del producto (sin instalar nada, ubicación al instante, confirmación por WhatsApp, cero papel) — pensada para sumar sustancia a la página sin inventar nada.
+- **Sección "Lo que van a decir tus invitados"**: pedida como "contenido de éxito"/testimonios de relleno. Se armó pero **marcada explícitamente como ejemplo** (badge "Ejemplo" en cada tarjeta + aclaración en el texto) en vez de simular clientes reales con nombre y foto — publicar testimonios inventados como si fueran genuinos en una web pública es publicidad engañosa, incluso como relleno temporal. Reemplazar por comentarios reales apenas haya clientes.
+
+### Tercera vuelta (mismo día): scroll simulado en el banner del celular — debug real con browser automation
+
+El pedido: que cada template del banner, mientras se muestra, simule que alguien lo está scrolleando (para apreciar el template completo, no solo el hero), lento, uno por vez. Se probó y falló dos veces antes de andar — el debug se hizo con control real de navegador (`claude-in-chrome`), no a ciegas:
+
+1. **Primer intento** (transform + iframe gigante escalado): tenía un bug real de reset (la vuelta a 0 se animaba en vez de ser instantánea, por transición siempre activa). Se corrigió, pero...
+2. **Segundo intento**: se midieron las alturas reales de los templates destacados con el navegador (bodas/botánico 3477px, quince 3567px, cumple-dulce 3249px, despedida-confetti 3002px, aniversario-carrusel 3226px — quedaron hardcodeadas un momento y después se sacaron). Al probarlo con captura de pantalla real, la pantalla del celular quedaba **en blanco** — un iframe nativo de +3000px de alto escalado con `transform:scale()` tiene un bug de renderizado conocido en Chrome (el DOM carga bien, `readyState` da `complete`, pero no pinta el contenido).
+3. **Solución final**: se abandonó la idea de un iframe gigante escalado. Ahora cada iframe tiene tamaño de celular real (390×812) y el scroll se hace de verdad adentro con `contentWindow.scrollTo()` (mismo origen, así que es accesible) — el `transform:scale()` solo se usa para reducir visualmente el iframe ya renderizado, no para fingir el scroll. Esto también reveló dos bugs más, encontrados con el navegador real en vez de a ciegas: (a) el CSS de los templates trae `scroll-behavior:smooth`, que competía con la animación manual — se fuerza `behavior:'instant'` en cada llamada; (b) la pestaña de prueba estaba en segundo plano (`document.hidden`), y `requestAnimationFrame` se pausa por completo ahí — se cambió a `setInterval` (50ms), que sigue funcionando (aunque con throttling) en pestañas no visibles, y corre sin problema en una pestaña real en foco.
+4. Timing final: pausa de 700ms arriba → scroll de 9.2s → resto de pausa hasta completar ~11.4s por template → crossfade de 300ms al siguiente.
+
+**Nota de compatibilidad (confirmada, no solo sospechada)**: el mecanismo de `contentWindow.scrollTo()` requiere mismo origen entre la página y los templates. Abriendo `index.html` con doble clic (protocolo `file://`) Chrome bloquea ese acceso — el crossfade entre templates se ve, pero el scroll simulado no corre (el JS hace early-return silencioso al no poder acceder a `contentWindow`), dando la sensación de que "cambia rápido sin mostrar nada". Se confirmó sirviendo el sitio con un server local (`http://localhost:8934`) y midiendo `scrollY` en vivo con `claude-in-chrome`: el scroll progresa perfecto (0 → 2664px en ~10s, hasta el fondo real del template). Va a andar bien apenas esté publicado en GitHub Pages (mismo origen real). Para probarlo antes de publicar, hace falta servirlo con algún servidor local (no doble clic al archivo) — **desde acá en adelante, todos los ajustes de esta página se prueban así**, sirviendo con un server local y verificando con `claude-in-chrome` en vez de abrir el archivo directo, porque es más representativo de cómo se va a ver en producción.
+
+Timing final ajustado a pedido: crossfade 0.4s, pausa antes de scrollear 250ms, scroll 13.5s (se subió de 9.2s por pedido explícito de que se sienta menos apurado), ciclo total ≈ 14.65s por template.
+
+### Cuarta vuelta (mismo día): nav fijo (Inicio / Beneficios / Templates)
+
+Se agregó `<nav class="navbar">` sticky arriba de todo, con tres links de scroll suave (usa el `scroll-behavior:smooth` que ya tenía el `html`, sin JS extra): Inicio (`#inicio`, la sección `.hero`), Beneficios (`#beneficios`), Templates (`#catalogo`, ya existía ese id en el `<main>`). Se agregó `scroll-margin-top` a esas tres secciones para que el nav fijo no tape el título al saltar. Verificado con `claude-in-chrome`: clickear "Templates" salta limpio a la sección de Bodas sin recortar el título.
+
 ## Publicación (catálogo de demostración)
 
 `index.html` en la raíz de esta carpeta es el home/catálogo para mostrarle los templates a la prima (quien va a ofrecer el producto): un menú por categoría, cada card abre su template en pestaña nueva (`target="_blank"`). Pensado para publicarse tal cual con GitHub Pages, igual que `aitumiprimeranito` — al estar `index.html` en la raíz del repo, alcanza con subir esta carpeta como repo y activar Settings → Pages. Las rutas de las cards son relativas (`templates/bodas/index.html`, etc.), así que funcionan sin cambios apenas se suba la carpeta completa.
