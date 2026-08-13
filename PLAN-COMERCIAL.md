@@ -75,13 +75,11 @@ No hace falta un sistema de upload todavía — eso es Fase 6.
 
 ---
 
-## Fase 4 — Dónde vive cada invitación vendida
+## Fase 4 — Dónde vive cada invitación vendida ✅ Repo listo, falta la primera entrega real
 
-Hoy todo cuelga del mismo repo `invitaciones-digitales` con datos de ejemplo — no hay dónde entregar una invitación real sin mezclarla con el catálogo público.
-
-- [ ] Crear un **segundo repo** (ej. `invitaciones-entregas`), separado del catálogo público, con GitHub Pages activado.
-- [ ] Cada venta = una subcarpeta nueva ahí (`/nombre-evento-fecha/index.html`), con el `CONFIG` ya personalizado y las fotos reales de la Fase 3.
-- [ ] El link que le pasás al cliente es de ese repo, nunca del catálogo de demostración.
+- [x] **Segundo repo creado y publicado** (2026-08-13): [`invitaciones-entregas`](https://github.com/NorbertoLoyola/invitaciones-entregas), separado del catálogo público, GitHub Pages activo sobre `main` → `https://norbertoloyola.github.io/invitaciones-entregas/<carpeta-de-la-venta>/`. Repo público (GitHub Pages privado necesita plan pago Pro/Team, que no tenés hoy) — decisión consciente: mientras el volumen sea bajo, no importa que el repo en sí sea técnicamente navegable en github.com.
+- [x] **Convención de entrega documentada** en el `README.md` de ese repo: cada venta = una carpeta nueva (`nombre-evento-fecha/`), copiando el template del catálogo, con el `CONFIG` personalizado, las fotos reales del cliente (Fase 3) y `RSVP_LOG_URL` cargado con la URL real del Apps Script (Fase 2) — sin eso el RSVP no queda registrado.
+- [ ] El link que le pasás al cliente es de ese repo, nunca del catálogo de demostración — se aplica recién con la primera venta real (Fase 5).
 - [ ] Más adelante (cuando haya ingresos): dominio propio corto, con cada invitación en una ruta linda (`tuinvitacion.com.ar/nombre-evento`) en vez de una URL de GitHub Pages.
 
 ---
