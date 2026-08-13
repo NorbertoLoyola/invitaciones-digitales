@@ -1,6 +1,13 @@
-# Invitaciones digitales — producto de venta
+# Late — invitaciones digitales (producto de venta)
 
 Proyecto propio (no relacionado con A. D. Barbieri / TOTVS Protheus): convertir la invitación digital hecha para el cumpleaños de Aitana en un producto de invitaciones para vender, con varios templates por tipo de evento, usando un motor de plantillas (config por cliente) en vez de copiar el HTML entero cada vez.
+
+## Marca y negocio (decidido 2026-08-11, ver `PLAN-COMERCIAL.md` para el detalle completo)
+
+- **Nombre**: Late. Handle de Instagram sugerido: `@late.invitaciones`.
+- **Quién lo ofrece**: Norberto y su mujer (corrige una mención anterior en este documento que decía "la prima" — esa fue una conversación previa, el dato actualizado es este).
+- **Precio inicial (beta)**: $20.000–$25.000, por debajo de la referencia de mercado hasta tener casos reales.
+- **Estrategia de lanzamiento**: validar el flujo operativo gratis con algún cumpleaños infantil de un conocido primero; lanzamiento comercial real con Bodas o 15 años después.
 
 ## Modelo de referencia
 
