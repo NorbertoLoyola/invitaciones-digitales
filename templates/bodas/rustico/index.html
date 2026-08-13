@@ -98,6 +98,7 @@
 
   .gallery{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:24px; }
   .ph{ aspect-ratio:1; background: var(--pergamino-osc); border:1px solid var(--verde-salvia); display:flex; align-items:center; justify-content:center; font-size:.65rem; color:#7a7160; letter-spacing:.08em; text-align:center; padding:8px; }
+  #gallery-grid img{ aspect-ratio:1; object-fit:cover; width:100%; display:block; border:1px solid var(--verde-salvia); }
 
   .rsvp-note{ font-size:.85rem; color:#5a5044; max-width:280px; margin:14px auto 0; line-height:1.6; }
   .rsvp-input{ display:block; width:100%; max-width:260px; margin:14px auto 0; padding:11px 16px; border-radius:24px; border:1.5px solid currentColor; font-family:inherit; font-size:.88rem; text-align:center; background:rgba(255,255,255,.7); color:inherit; }
@@ -265,10 +266,11 @@ CONFIG.itinerario.forEach(item=>{
 
 const gallery = document.getElementById('gallery-grid');
 for(let i=0;i<CONFIG.fotos;i++){
-  const ph = document.createElement('div');
-  ph.className = 'ph';
-  ph.textContent = 'Foto ' + (i+1);
-  gallery.appendChild(ph);
+  const img = document.createElement('img');
+  img.src = `img/foto-${i+1}.jpg`;
+  img.alt = 'Foto ' + (i+1);
+  img.loading = 'lazy';
+  gallery.appendChild(img);
 }
 
 // --- Countdown ---

@@ -97,6 +97,7 @@
 
   .gallery{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:24px; }
   .ph{ aspect-ratio:1; background: var(--noche-suave); border:1px solid var(--magenta); display:flex; align-items:center; justify-content:center; font-size:.62rem; color:var(--rosa); letter-spacing:.08em; text-align:center; padding:8px; }
+  #gallery-grid img{ aspect-ratio:1; object-fit:cover; width:100%; display:block; border:1px solid var(--magenta); }
 
   .mensaje-texto{ font-size:1rem; line-height:1.8; max-width:310px; margin:22px auto 0; color:var(--crema); font-style:italic; opacity:.92; }
   .mensaje-firma{ font-family:'Bodoni Moda', serif; font-style:italic; font-size:1.5rem; color:var(--champagne); margin-top:14px; }
@@ -277,9 +278,10 @@ CONFIG.padrinos.forEach(p=>{
 
 const gallery = document.getElementById('gallery-grid');
 for(let i=0;i<CONFIG.fotos;i++){
-  const ph = document.createElement('div');
-  ph.className = 'ph';
-  ph.textContent = 'Foto ' + (i+1);
+  const ph = document.createElement('img');
+  ph.src = `img/foto-${i+1}.jpg`;
+  ph.alt = 'Foto ' + (i+1);
+  ph.loading = 'lazy';
   gallery.appendChild(ph);
 }
 

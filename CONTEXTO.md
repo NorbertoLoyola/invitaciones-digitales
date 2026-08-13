@@ -163,4 +163,18 @@ invitaciones-digitales/
 - **Template de primera comunión (neutro)**: guardado en `templates/primera-comunion/neutro/index.html`, generado directamente con `color-scheme: light only`.
 - **Template de 15 (glam)**: guardado en `templates/quince/index.html` (título "Mis 15", con `const CONFIG`). Se le agregó `<meta name="color-scheme" content="dark only">` (faltaba) — es dark only y no light only porque el diseño es oscuro por naturaleza (`color-scheme: dark` en el CSS).
 - **Cumpleaños infantil**: cuatro subestilos generados en `templates/cumple-infantil/` (`0-2-anos`, `3-5-anos`, `6-9-anos`, `10-12-anos`), cada uno con su propio `color-scheme` (light/dark según corresponda al diseño) y el mismo motor `CONFIG`.
-- Baby shower y bautismo: sin empezar todavía.
+
+## Fase 3 — fotos de stock en el catálogo (2026-08-13)
+
+Los 13 templates con sección de galería (todos menos `aniversario/carrusel`, que usa un carrusel de texto, y `baby-shower/reveal`, que no tiene galería) reemplazaron el placeholder `<div class="ph">Foto N</div>` por `<img>` reales, apuntando a `templates/<categoría>/img/foto-N.jpg` (4 fotos c/u, descargadas al repo, no enlazadas a Unsplash).
+
+**Por qué existen estas fotos y qué NO son**: son fotos de stock con licencia Unsplash (uso comercial libre, sin atribución) elegidas para el **catálogo de demostración público** — para que un visitante vea el estilo real de cada template en vez de cajas grises con "Foto 1". No son fotos de ningún cliente. Cuando se arme la Fase 4 (repo de entregas separado), cada venta real lleva las fotos que mande el cliente, no estas.
+
+**Filtro aplicado al elegir cada foto** (varias búsquedas de Unsplash devolvieron resultados que había que descartar a mano, no alcanzaba con la relevancia del buscador):
+- Nada de personajes con marca/copyright reconocible visible en la foto (se descartaron: fondo con Tiana de Disney en una foto de quince, campera "PAW Patrol", castillo inflable con Mickey Mouse, gorro y caja "Krispy Kreme", botella "Maker's Mark" de fondo).
+- Nada de nombres, fechas o iniciales de un bebé/persona real horneados o escritos en la foto (varias tortas de "cumple 1 año" en los resultados tenían el nombre real del bebé del cliente original — se descartaron aunque la ocasión encajara).
+- Ocasión correcta, no solo "se ve parecido": se descartaron fotos de Año Nuevo (globos "Happy New Year"), Navidad (papel de regalo con muñecos de nieve) y "sweet 16" que aparecían mezcladas en búsquedas de cumpleaños/quince.
+- Edad correcta para cumple-infantil: la búsqueda "tween birthday party" devolvía sobre todo adultos de 20-30 años: se descartaron y se buscó de nuevo con términos más específicos ("kids party games", regalos/torta sin personas) hasta lograr las 4 fotos del rango 10-12 años.
+- Para despedida de soltera: se descartó una foto con un hombre en primer plano (evento típicamente solo de mujeres) y otra de Año Nuevo mal indexada como "bachelorette".
+
+Este es el mismo criterio de cuidado con copyright que ya se había aplicado al caso "dulce" (Minnie Mouse) documentado más arriba — se mantiene como estándar para cualquier foto que se sume al catálogo público de ahora en más.

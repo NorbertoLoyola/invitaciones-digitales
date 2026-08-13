@@ -99,6 +99,7 @@
 
   .gallery{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:24px; }
   .ph{ aspect-ratio:1; background:#fff; border:2px dashed var(--rosa); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:600; color:var(--carbon-suave); text-align:center; padding:8px; }
+  #gallery-grid img{ aspect-ratio:1; object-fit:cover; width:100%; display:block; border:2px solid var(--rosa); border-radius:16px; }
 
   .mensaje-texto{ font-size:1rem; line-height:1.8; max-width:310px; margin:20px auto 0; color:var(--carbon); }
   .mensaje-firma{ font-family:'Caveat', cursive; font-weight:700; font-size:1.7rem; color:var(--rosa-osc); margin-top:12px; }
@@ -260,9 +261,10 @@ CONFIG.itinerario.forEach(item=>{
 
 const gallery = document.getElementById('gallery-grid');
 for(let i=0;i<CONFIG.fotos;i++){
-  const ph = document.createElement('div');
-  ph.className = 'ph';
-  ph.textContent = 'Foto ' + (i+1);
+  const ph = document.createElement('img');
+  ph.src = `img/foto-${i+1}.jpg`;
+  ph.alt = 'Foto ' + (i+1);
+  ph.loading = 'lazy';
   gallery.appendChild(ph);
 }
 

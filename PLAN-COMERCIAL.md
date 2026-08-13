@@ -63,10 +63,15 @@ Todo esto no depende de que exista una venta todavía. Se hace una vez, sobre el
 
 ## Fase 3 — Fotos reales
 
-No hace falta un sistema de upload todavía — eso es Fase 6. Para las primeras ventas:
+No hace falta un sistema de upload todavía — eso es Fase 6.
 
-- [ ] Al personalizar el `CONFIG` de un cliente, reemplazar los `<div class="ph">Foto 1</div>` placeholder por `<img>` reales, con las fotos que el cliente te mande (por WhatsApp, subidas a donde sea — imgur, Google Drive con link público, etc.).
-- [ ] Es 100% manual por ahora — está bien, mientras el volumen sea bajo. Documentarlo como parte del flujo de entrega de la Fase 0.
+- [x] **Catálogo público: sacar los placeholders "Foto 1", "Foto 2"...** (2026-08-13). Los 13 templates con galería (`aniversario/carrusel` y `baby-shower/reveal` no tienen sección de fotos, no aplica) ahora muestran fotos reales de stock con licencia libre de uso comercial (Unsplash), elegidas para que encajen con cada categoría — no genéricas. Se descargaron al repo (`templates/<categoría>/img/foto-N.jpg`) en vez de enlazar directo a Unsplash, para no depender de su CDN. Criterio de selección aplicado a mano en cada foto candidata, no solo por relevancia de búsqueda:
+  - Sin personajes con copyright/marca reconocible (se descartaron fotos con Disney, Marvel, PAW Patrol, Krispy Kreme, LEGO visibles).
+  - Sin nombres, fechas ni datos de clientes reales horneados/escritos en la foto (se descartaron varias tortas con nombres de bebés reales).
+  - Ocasión correcta (se descartaron fotos de Año Nuevo, Navidad y "sweet 16" que aparecían mezcladas en los resultados de búsqueda).
+  - Rango etario correcto para cumple-infantil (se descartaron fotos de adultos/adolescentes en la búsqueda de "10-12 años").
+  - El catálogo demo ahora se ve como un producto terminado, no como una maqueta a medio hacer — esto era parte de la crítica original del negocio.
+- [ ] **Entrega real de un cliente**: al personalizar el `CONFIG` de una venta, reemplazar las fotos de stock por las que el cliente mande (por WhatsApp, Google Drive con link público, etc.) — sigue siendo 100% manual, está bien mientras el volumen sea bajo. Documentado como parte del flujo de entrega de la Fase 0.
 
 ---
 
