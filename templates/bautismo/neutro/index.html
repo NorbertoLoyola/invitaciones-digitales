@@ -227,7 +227,7 @@ const CONFIG = {
 };
 
 // --- Registro de RSVP (Fase 2 del plan comercial: Google Sheet + Apps Script) ---
-const RSVP_LOG_URL = ""; // completar con la URL del Apps Script una vez desplegado (ver rsvp-apps-script.md)
+const RSVP_LOG_URL = "https://script.google.com/macros/s/AKfycbwGLit2nqmSdkGmVQ0AkfWIrZCIO-vGibaWQ9VYZ7XsrhbU7KoK4t3XSYVMpSE_fyPB/exec";
 function registrarRSVP(datos){
   if(!RSVP_LOG_URL) return;
   fetch(RSVP_LOG_URL, {

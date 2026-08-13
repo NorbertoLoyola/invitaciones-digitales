@@ -50,14 +50,14 @@ Todo esto no depende de que exista una venta todavía. Se hace una vez, sobre el
 
 ---
 
-## Fase 2 — Que el RSVP cumpla lo que promete
+## Fase 2 — Que el RSVP cumpla lo que promete ✅ Cerrada (2026-08-13)
 
-Hoy "vos ves quién confirmó sin planillas" es falso — el botón solo abre WhatsApp. Opción realista sin backend pago:
+"Vos ves quién confirmó sin planillas" ya es cierto: el botón abre WhatsApp Y registra la confirmación en una planilla real.
 
-- [x] **Código del backend listo** (`rsvp-apps-script.md`, en la raíz del repo): Google Sheet + Apps Script `doPost`/`doGet`, con los pasos exactos para desplegarlo. **Pendiente que Norberto lo despliegue con su cuenta de Google** (no se puede hacer por él) y pase la URL resultante — con eso se completa `RSVP_LOG_URL` en los 15 templates (hoy vacío, así que no rompe nada mientras tanto).
-- [x] **El motor ahora captura el nombre real**: se agregó un campo "Tu nombre" antes del botón de confirmar, en los 15 templates. Al tocar "Confirmar", el nombre se suma al mensaje de WhatsApp (`Soy <nombre>. <mensaje original>`) y se dispara un `fetch()` de registro (silencioso, no bloquea ni rompe nada si `RSVP_LOG_URL` todavía está vacío). Caso especial resuelto: el template "dulce" (RSVP doble mamá/papá) comparte un solo campo de nombre entre los dos botones; "despedida-soltera/confetti" mantiene su animación de confetti intacta, combinada con el registro nuevo (dos listeners independientes sobre el mismo botón).
+- [x] **Código del backend listo** (`rsvp-apps-script.md`, en la raíz del repo): Google Sheet + Apps Script `doPost`/`doGet`, con los pasos exactos para desplegarlo.
+- [x] **El motor ahora captura el nombre real**: se agregó un campo "Tu nombre" antes del botón de confirmar, en los 15 templates. Al tocar "Confirmar", el nombre se suma al mensaje de WhatsApp (`Soy <nombre>. <mensaje original>`) y se dispara un `fetch()` de registro. Caso especial resuelto: el template "dulce" (RSVP doble mamá/papá) comparte un solo campo de nombre entre los dos botones; "despedida-soltera/confetti" mantiene su animación de confetti intacta, combinada con el registro nuevo (dos listeners independientes sobre el mismo botón).
 - [x] Verificado con `claude-in-chrome` (no solo leído): el nombre llega bien armado al link de WhatsApp, sin errores de consola, en un caso simple (bodas/rústico) y en el caso especial de doble botón (dulce).
-- [ ] **Falta**: que Norberto despliegue el Apps Script y pase la URL — recién ahí las confirmaciones empiezan a caer en la planilla de verdad. Hasta entonces, el RSVP funciona igual que antes (abre WhatsApp), solo que ahora con el nombre incluido en el mensaje.
+- [x] **Apps Script desplegado en producción** (2026-08-13, cuenta `norbertoloyola@gmail.com`, con permiso explícito de Norberto): Sheet "Late — RSVP" + Web App con acceso "Cualquiera" y ejecución "Yo". URL real (`.../exec`) ya cargada en `RSVP_LOG_URL` de los 15 templates. Verificado con `curl` que el endpoint responde ("Late RSVP Logger activo."). **Fase 2 cerrada**: las confirmaciones de RSVP ahora caen de verdad en la planilla — la promesa "vos ves quién confirmó sin planillas" ya es cierta.
 
 ---
 
