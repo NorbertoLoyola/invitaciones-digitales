@@ -34,7 +34,7 @@ Nada de esto se programa — son decisiones de negocio que todo lo demás depend
 8. Le mandan el link al cliente para que lo revise antes de compartirlo con sus invitados.
 9. Cliente aprueba (o pide un ajuste chico) → cobran el resto del precio.
 10. Cliente comparte el link con sus invitados.
-11. Van viendo las confirmaciones que lleguen (por WhatsApp por ahora; automatizado en Fase 2).
+11. En cuanto llegue la primera confirmación, le pasan al cliente el link de su planilla (aparece en el índice "Late — RSVP" — ver `rsvp-apps-script.md`). Ve ahí, en tiempo real, quién confirmó, además de recibir cada aviso por WhatsApp.
 12. Pasado el evento, les piden permiso para usar la invitación como caso real en el catálogo (reemplaza un testimonio "Ejemplo").
 
 ---
@@ -57,7 +57,9 @@ Todo esto no depende de que exista una venta todavía. Se hace una vez, sobre el
 - [x] **Código del backend listo** (`rsvp-apps-script.md`, en la raíz del repo): Google Sheet + Apps Script `doPost`/`doGet`, con los pasos exactos para desplegarlo.
 - [x] **El motor ahora captura el nombre real**: se agregó un campo "Tu nombre" antes del botón de confirmar, en los 15 templates. Al tocar "Confirmar", el nombre se suma al mensaje de WhatsApp (`Soy <nombre>. <mensaje original>`) y se dispara un `fetch()` de registro. Caso especial resuelto: el template "dulce" (RSVP doble mamá/papá) comparte un solo campo de nombre entre los dos botones; "despedida-soltera/confetti" mantiene su animación de confetti intacta, combinada con el registro nuevo (dos listeners independientes sobre el mismo botón).
 - [x] Verificado con `claude-in-chrome` (no solo leído): el nombre llega bien armado al link de WhatsApp, sin errores de consola, en un caso simple (bodas/rústico) y en el caso especial de doble botón (dulce).
-- [x] **Apps Script desplegado en producción** (2026-08-13, cuenta `norbertoloyola@gmail.com`, con permiso explícito de Norberto): Sheet "Late — RSVP" + Web App con acceso "Cualquiera" y ejecución "Yo". URL real (`.../exec`) ya cargada en `RSVP_LOG_URL` de los 15 templates. Verificado con `curl` que el endpoint responde ("Late RSVP Logger activo."). **Fase 2 cerrada**: las confirmaciones de RSVP ahora caen de verdad en la planilla — la promesa "vos ves quién confirmó sin planillas" ya es cierta.
+- [x] **Apps Script desplegado en producción** (2026-08-13, cuenta `norbertoloyola@gmail.com`, con permiso explícito de Norberto): Sheet "Late — RSVP" + Web App con acceso "Cualquiera" y ejecución "Yo". URL real (`.../exec`) ya cargada en `RSVP_LOG_URL` de los 15 templates. Verificado que el endpoint responde ("Late RSVP Logger activo.").
+- [x] **Planilla propia por venta, no una sola mezclada** (2026-08-13, ver detalle en `rsvp-apps-script.md`): "Late — RSVP" pasó a ser el **índice** (una fila por evento, con el link de su planilla); la primera confirmación de cada evento crea automáticamente una planilla nueva (`Late RSVP — <evento>`), compartida como "cualquiera con el link puede ver". Esa es la que se le pasa al cliente en la entrega — ve solo su lista, en tiempo real, sin pedírtela a vos. Probado de punta a punta (creación automática, permisos, escritura de filas) y limpiado el evento de prueba antes de cerrar.
+- [x] **Fase 2 cerrada**: las confirmaciones de RSVP ahora caen de verdad en una planilla — la promesa "vos ves quién confirmó sin planillas" ya es cierta, y además le sirve al cliente, no solo a vos.
 
 ---
 

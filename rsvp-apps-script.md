@@ -1,28 +1,64 @@
-# RSVP real — Google Sheet + Apps Script (Fase 2, parte 1)
+# RSVP real — Google Sheet + Apps Script (Fase 2)
 
-Backend liviano y gratis para que las confirmaciones de asistencia queden en una planilla, en vez de perdidas en mensajes de WhatsApp sueltos.
+Backend liviano y gratis para que las confirmaciones de asistencia queden ordenadas, en vez de perdidas en mensajes de WhatsApp sueltos.
 
-## Pasos
+## Arquitectura: una planilla "índice" + una planilla por venta
 
-1. Andá a [sheets.google.com](https://sheets.google.com) → **Hoja de cálculo en blanco**. Ponele de nombre "Late — RSVP".
-2. En la primera fila, escribí los encabezados (una vez, a mano):
-   `Fecha de registro | Evento | Invitado | Fecha del evento | Estilo`
-3. Menú **Extensiones → Apps Script**.
-4. Borrá todo el código de ejemplo que aparece (`function myFunction() {...}`) y pegá esto:
+No todo cae en una sola planilla mezclada. Hay dos niveles:
+
+- **"Late — RSVP"** (la planilla original, tuya): funciona como **índice**. Una fila por evento: `Evento | ID Planilla | Link | Fecha de creación`. Vos la mirás para encontrar el link de cualquier venta.
+- **Una planilla nueva por venta**, creada automáticamente la primera vez que confirma un invitado de ese evento (`Late RSVP — <nombre del evento>`), compartida como **"cualquiera con el link puede ver"**. Esa es la que le mandás al cliente — ve solo su lista, sin ruido de otros eventos, sin necesitar cuenta de Google.
+
+El propio Apps Script se encarga de crear la planilla, ponerle el encabezado, compartirla y anotarla en el índice — no hace falta tocar nada a mano por cada venta nueva.
+
+## Código (`Código.gs`)
 
 ```javascript
 function doPost(e) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var datos = JSON.parse(e.postData.contents);
-  sheet.appendRow([
-    new Date(),
-    datos.evento || '',
-    datos.invitado || '',
-    datos.fechaEvento || '',
-    datos.estilo || ''
-  ]);
-  return ContentService.createTextOutput(JSON.stringify({ ok: true }))
-    .setMimeType(ContentService.MimeType.JSON);
+  var lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    var datos = JSON.parse(e.postData.contents);
+    var evento = datos.evento || 'Sin nombre';
+    var hoja = obtenerOCrearHojaEvento(evento);
+    hoja.appendRow([
+      new Date(),
+      datos.evento || '',
+      datos.invitado || '',
+      datos.fechaEvento || '',
+      datos.estilo || ''
+    ]);
+    return ContentService.createTextOutput(JSON.stringify({ ok: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function obtenerOCrearHojaEvento(evento) {
+  var indice = SpreadsheetApp.getActiveSpreadsheet();
+  var hojaIndice = indice.getSheets()[0];
+  var datosIndice = hojaIndice.getDataRange().getValues();
+
+  for (var i = 1; i < datosIndice.length; i++) {
+    if (datosIndice[i][0] === evento) {
+      var ssExistente = SpreadsheetApp.openById(datosIndice[i][1]);
+      return ssExistente.getSheets()[0];
+    }
+  }
+
+  var nuevaSs = SpreadsheetApp.create('Late RSVP — ' + evento);
+  var hoja = nuevaSs.getSheets()[0];
+  hoja.setName('RSVP');
+  hoja.appendRow(['Fecha de registro', 'Evento', 'Invitado', 'Fecha del evento', 'Estilo']);
+  hoja.getRange(1, 1, 1, 5).setFontWeight('bold');
+
+  DriveApp.getFileById(nuevaSs.getId())
+    .setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+  hojaIndice.appendRow([evento, nuevaSs.getId(), nuevaSs.getUrl(), new Date()]);
+
+  return hoja;
 }
 
 function doGet(e) {
@@ -30,20 +66,18 @@ function doGet(e) {
 }
 ```
 
-5. Guardá el proyecto (ícono de disquete, nombre sugerido: "Late RSVP Logger").
-6. Arriba a la derecha, **Implementar → Nueva implementación**.
-7. Tipo: **Aplicación web**.
-8. Configuración:
-   - **Ejecutar como**: Yo (tu cuenta)
-   - **Quién tiene acceso**: **Cualquier usuario** (esto es importante — el que confirma es un invitado anónimo desde su celular, sin loguearse a nada)
-9. Al implementar, Google te va a pedir autorizar permisos — es tu propio script, es seguro, aceptá.
-10. Te va a dar una **URL que termina en `/exec`**. Copiala.
-11. **Pasame esa URL** — con eso completo el `RSVP_LOG_URL` en el motor de todos los templates (ver `PLAN-COMERCIAL.md`, Fase 2 parte 2).
+`LockService` evita que dos confirmaciones que lleguen casi al mismo tiempo (típico el día del evento) creen dos planillas duplicadas para el mismo evento.
 
-## Cómo probarlo vos mismo (opcional, antes de pasarme la URL)
+## Estado actual (2026-08-13)
 
-Pegá la URL en la barra del navegador — si ves el texto "Late RSVP Logger activo.", el despliegue funcionó. Eso confirma el `doGet`; el `doPost` (que es el que realmente registra confirmaciones) se prueba solo una vez esté conectado a un template real.
+- [x] Planilla índice: [Late — RSVP](https://docs.google.com/spreadsheets/d/1PR52BFZqdBGf7Bw1vooeBZ4lf2nRwnPi4-X2hsQkOh4/edit)
+- [x] Apps Script "Late RSVP Logger" desplegado, `Ejecutar como: Yo`, `Acceso: Cualquier usuario`.
+- [x] URL en producción, ya cargada en `RSVP_LOG_URL` de los 15 templates: `https://script.google.com/macros/s/AKfycbwGLit2nqmSdkGmVQ0AkfWIrZCIO-vGibaWQ9VYZ7XsrhbU7KoK4t3XSYVMpSE_fyPB/exec`
+
+## Flujo de entrega (agregado al checklist de la Fase 0)
+
+Cuando entregues una venta real: una vez que llegue la primera confirmación de ese evento (podés generarla vos mismo probando el link antes de mandarlo al cliente), va a aparecer una fila nueva en el índice con el link de "su" planilla. **Ese link es lo que le pasás al cliente** junto con la invitación — así ve la lista de confirmados en tiempo real, sin tener que pedírtela a vos.
 
 ## Si más adelante hace falta cambiar el código
 
-Volvé a Extensiones → Apps Script en esta misma planilla, editá, guardá, y **Implementar → Gestionar implementaciones → Editar (ícono lápiz) → Nueva versión**. La URL no cambia.
+Extensiones → Apps Script en la planilla índice, editá, guardá, y **Implementar → Administrar las implementaciones → Editar (ícono lápiz) → Nueva versión → Implementar**. La URL `/exec` no cambia — no hace falta tocar los templates de nuevo. Si el código nuevo usa un servicio de Google que no usaba antes (como acá, que se sumó `DriveApp` para compartir), Google va a pedir volver a autorizar permisos al implementar.
