@@ -54,10 +54,10 @@ Todo esto no depende de que exista una venta todavía. Se hace una vez, sobre el
 
 Hoy "vos ves quién confirmó sin planillas" es falso — el botón solo abre WhatsApp. Opción realista sin backend pago:
 
-- [ ] Crear una **Google Sheet** + un **Google Apps Script publicado como Web App** (gratis, sin backend propio) que reciba un `fetch()` con nombre + evento cuando alguien toca "Confirmar asistencia".
-- [ ] Modificar el botón de RSVP en el motor de templates: primero dispara ese `fetch()` (registra la confirmación en la planilla), y en paralelo abre WhatsApp como hoy — el invitado no nota diferencia, sigue siendo un solo toque.
-- [ ] Resultado: vos SÍ tenés una lista real (aunque técnicamente sea una planilla del lado de atrás — la diferencia es que se llena sola, no que la leas mensaje por mensaje de WhatsApp).
-- [ ] Aplicar este cambio al motor una sola vez, no template por template — está en la parte de JS que ya se repite en todos.
+- [x] **Código del backend listo** (`rsvp-apps-script.md`, en la raíz del repo): Google Sheet + Apps Script `doPost`/`doGet`, con los pasos exactos para desplegarlo. **Pendiente que Norberto lo despliegue con su cuenta de Google** (no se puede hacer por él) y pase la URL resultante — con eso se completa `RSVP_LOG_URL` en los 15 templates (hoy vacío, así que no rompe nada mientras tanto).
+- [x] **El motor ahora captura el nombre real**: se agregó un campo "Tu nombre" antes del botón de confirmar, en los 15 templates. Al tocar "Confirmar", el nombre se suma al mensaje de WhatsApp (`Soy <nombre>. <mensaje original>`) y se dispara un `fetch()` de registro (silencioso, no bloquea ni rompe nada si `RSVP_LOG_URL` todavía está vacío). Caso especial resuelto: el template "dulce" (RSVP doble mamá/papá) comparte un solo campo de nombre entre los dos botones; "despedida-soltera/confetti" mantiene su animación de confetti intacta, combinada con el registro nuevo (dos listeners independientes sobre el mismo botón).
+- [x] Verificado con `claude-in-chrome` (no solo leído): el nombre llega bien armado al link de WhatsApp, sin errores de consola, en un caso simple (bodas/rústico) y en el caso especial de doble botón (dulce).
+- [ ] **Falta**: que Norberto despliegue el Apps Script y pase la URL — recién ahí las confirmaciones empiezan a caer en la planilla de verdad. Hasta entonces, el RSVP funciona igual que antes (abre WhatsApp), solo que ahora con el nombre incluido en el mensaje.
 
 ---
 

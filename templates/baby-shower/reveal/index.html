@@ -123,6 +123,8 @@
   .mensaje-firma{ font-family:'Fraunces', serif; font-style:italic; font-size:1.4rem; color:var(--dorado); margin-top:14px; }
 
   .rsvp-note{ font-size:.85rem; color:var(--carbon-suave); max-width:280px; margin:14px auto 0; line-height:1.6; }
+  .rsvp-input{ display:block; width:100%; max-width:260px; margin:14px auto 0; padding:11px 16px; border-radius:24px; border:1.5px solid currentColor; font-family:inherit; font-size:.88rem; text-align:center; background:rgba(255,255,255,.7); color:inherit; }
+  .rsvp-input::placeholder{ color:inherit; opacity:.55; }
 
   footer{ padding:56px 30px 76px; text-align:center; }
   footer .footer-name{ font-family:'Fraunces', serif; font-style:italic; font-size:1.9rem; color:var(--dorado); }
@@ -201,6 +203,7 @@
   <section id="rsvp-section" class="fade-up">
     <h2>Confirmá tu asistencia</h2>
     <p class="rsvp-note" id="rsvp-note"></p>
+    <input type="text" class="rsvp-input" id="rsvp-nombre" placeholder="Tu nombre" autocomplete="name">
     <a class="btn" id="rsvp-btn" href="#" target="_blank" rel="noopener">Confirmar por WhatsApp</a>
   </section>
 
@@ -251,6 +254,17 @@ const RESULTADOS = {
   sorpresa: { texto: '¡Sorpresa en vivo!', sub: 'Lo develamos en el evento', color1: 'var(--dorado)', color2: 'var(--carbon)' },
 };
 
+// --- Registro de RSVP (Fase 2 del plan comercial: Google Sheet + Apps Script) ---
+const RSVP_LOG_URL = ""; // completar con la URL del Apps Script una vez desplegado (ver rsvp-apps-script.md)
+function registrarRSVP(datos){
+  if(!RSVP_LOG_URL) return;
+  fetch(RSVP_LOG_URL, {
+    method: 'POST', mode: 'no-cors',
+    headers: {'Content-Type': 'text/plain'},
+    body: JSON.stringify(datos)
+  }).catch(()=>{});
+}
+
 // --- Render ---
 document.getElementById('eyebrow-text').textContent = CONFIG.eyebrow;
 document.getElementById('mama-name').textContent = CONFIG.nombreMama;
@@ -264,7 +278,13 @@ document.getElementById('nota-text').textContent = CONFIG.nota;
 document.getElementById('mensaje-texto').textContent = CONFIG.mensaje;
 document.getElementById('mensaje-firma').textContent = CONFIG.mensajeFirma;
 document.getElementById('rsvp-note').textContent = CONFIG.rsvpNota;
-document.getElementById('rsvp-btn').href = `https://wa.me/${CONFIG.whatsappNumero}?text=${encodeURIComponent(CONFIG.whatsappMensaje)}`;
+document.getElementById('rsvp-btn').addEventListener('click', function(e){
+  e.preventDefault();
+  const nombreInvitado = (document.getElementById('rsvp-nombre').value || '').trim() || 'Un invitado';
+  const mensaje = `Soy ${nombreInvitado}. ${CONFIG.whatsappMensaje}`;
+  registrarRSVP({ evento: document.title, invitado: nombreInvitado, fechaEvento: CONFIG.fechaTexto || '' });
+  window.open(`https://wa.me/${CONFIG.whatsappNumero}?text=${encodeURIComponent(mensaje)}`, '_blank', 'noopener');
+});
 
 const r = RESULTADOS[CONFIG.revelado];
 document.getElementById('resultado-texto').textContent = r.texto;

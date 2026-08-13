@@ -140,6 +140,8 @@
   .mensaje-firma{ font-family:'Caveat', cursive; font-weight:700; font-size:1.7rem; color:var(--rosa-700); margin-top:12px; }
 
   .rsvp-note{ font-size:.85rem; color:var(--carbon-suave); max-width:280px; margin:14px auto 0; line-height:1.6; }
+  .rsvp-input{ display:block; width:100%; max-width:240px; margin:14px auto 0; padding:11px 16px; border-radius:24px; border:none; font-family:inherit; font-size:.88rem; text-align:center; background:rgba(255,255,255,.9); color:var(--carbon); }
+  .rsvp-input::placeholder{ color:var(--carbon-suave); }
 
   footer{ padding:56px 30px 76px; text-align:center; }
   footer .footer-name{ font-family:'Caveat', cursive; font-weight:700; font-size:2.2rem; color:var(--rosa-700); }
@@ -215,6 +217,7 @@
     <div class="blob">
       <h2>Confirmación de asistencia</h2>
       <p class="rsvp-note" id="rsvp-note" style="color:rgba(255,255,255,0.9);"></p>
+      <input type="text" class="rsvp-input" id="rsvp-nombre" placeholder="Tu nombre" autocomplete="name">
       <div class="btn-row" id="rsvp-buttons"></div>
     </div>
   </section>
@@ -265,6 +268,17 @@ const CONFIG = {
   footerNota: "Gracias por ser parte de este momento.",
 };
 
+// --- Registro de RSVP (Fase 2 del plan comercial: Google Sheet + Apps Script) ---
+const RSVP_LOG_URL = ""; // completar con la URL del Apps Script una vez desplegado (ver rsvp-apps-script.md)
+function registrarRSVP(datos){
+  if(!RSVP_LOG_URL) return;
+  fetch(RSVP_LOG_URL, {
+    method: 'POST', mode: 'no-cors',
+    headers: {'Content-Type': 'text/plain'},
+    body: JSON.stringify(datos)
+  }).catch(()=>{});
+}
+
 // --- Render ---
 document.getElementById('big-num').textContent = CONFIG.edadNumero;
 document.getElementById('subtitulo-text').textContent = CONFIG.subtitulo;
@@ -297,14 +311,23 @@ for(let i=0;i<CONFIG.fotos;i++){
 }
 
 // --- RSVP: uno o varios botones según CONFIG.rsvpContactos ---
+// El nombre se toma de #rsvp-nombre recién al hacer click (no al cargar
+// la página), así que los botones usan un handler en vez de un href fijo.
 const rsvpBox = document.getElementById('rsvp-buttons');
 CONFIG.rsvpContactos.forEach(c=>{
   const a = document.createElement('a');
   a.className = 'btn';
+  a.href = '#';
   a.target = '_blank';
   a.rel = 'noopener';
-  a.href = `https://wa.me/${c.numero}?text=${encodeURIComponent(c.mensaje)}`;
   a.textContent = c.etiqueta;
+  a.addEventListener('click', function(e){
+    e.preventDefault();
+    const nombreInvitado = (document.getElementById('rsvp-nombre').value || '').trim() || 'Un invitado';
+    const mensaje = `Soy ${nombreInvitado}. ${c.mensaje}`;
+    registrarRSVP({ evento: document.title, invitado: nombreInvitado, contacto: c.etiqueta, fechaEvento: CONFIG.fechaTexto || '' });
+    window.open(`https://wa.me/${c.numero}?text=${encodeURIComponent(mensaje)}`, '_blank', 'noopener');
+  });
   rsvpBox.appendChild(a);
 });
 
