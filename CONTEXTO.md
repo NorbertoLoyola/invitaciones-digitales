@@ -135,7 +135,7 @@ Se recorrió `invitio.events/es/crear` (flujo completo: elegir evento → elegir
 3. **Botón "Añadir a mi calendario"** — agrega el evento al Google Calendar del invitado con un tap. **Implementado** (ver abajo).
 4. **Personalización instantánea en el selector de plantillas**: antes de mostrar la galería, pregunta el nombre del evento y lo aplica en vivo a las miniaturas. **Implementado** (ver abajo) — con una variante más suave: no bloquea el acceso al catálogo, es un campo opcional arriba de los chips de filtro.
 5. **CTA flotante fijo** durante todo el scroll de la plantilla. **Implementado** (ver abajo) — se aplicó al botón de RSVP de la invitación individual (no al catálogo, que ya tiene su propio patrón de card con dos CTA; son casos distintos).
-6. **Galería en pila estilo Polaroid con swipe** en vez de grilla estática. No implementado — cambio visual más grande, evaluar a futuro.
+6. **Galería en pila estilo Polaroid con swipe** en vez de grilla estática. **Implementado** (ver abajo).
 
 Confirma también que "Graduación" es una categoría de mercado real y separada — valida la decisión de sumar egresados.
 
@@ -186,6 +186,20 @@ Primera versión (commit anterior) pasaba el nombre por `?nombre=...` y lo aplic
   - **Excepción sin personalizar**: `egresados-secundaria/birrete` no tiene campo de nombre individual (`tituloEvento`/`promocion` son genéricos de toda la promoción) — no lleva overlay.
 - `CONFIG.mensajeFirma` solo se pisa cuando es copia exacta del nombre demo (evita romper firmas tipo "Con cariño, Mamá y Papá"); `CONFIG.whatsappMensaje` se actualiza con `.replaceAll(nombreDemo, nombreNuevo)` para que el botón de RSVP mande el mensaje ya personalizado. Caso especial `cumple-infantil/0-2-anos/dulce`: no tiene `whatsappMensaje` sino `rsvpContactos[]` (RSVP doble mamá/papá) — se hace el mismo `.replaceAll` sobre `c.mensaje` de cada contacto, mutando los objetos in-place (el botón ya creado lee `c.mensaje` por referencia al hacer click, así que el cambio se refleja sin volver a crear los botones).
 - Verificado en vivo con servidor local + `claude-in-chrome` en los tres patrones (quince 1-nombre, bodas/rustico y aniversario 2-nombres, dulce con `rsvpContactos`): nombre/firma/whatsapp quedan consistentes tras confirmar, "Ver con datos de muestra" cierra sin aplicar nada, y sin errores de consola en ningún caso.
+
+**Bug encontrado y corregido (2026-08-16)**: el overlay se mostraba también dentro de los iframes de preview del hero del catálogo (`index.html`, el "celular" que rota sola por 5 templates destacados) — como nadie hace clic en "Ver con datos de muestra" ahí, tapaba la vista previa para siempre. Se agregó un chequeo al toque del `IIFE` de personalización en los 16 templates: `if(window.self !== window.top){ overlay.classList.add('oculto'); return; }` — si la página está corriendo dentro de un iframe (el caso del hero), el overlay se oculta de entrada y no se engancha ningún listener. Verificado en vivo: el mockup del hero vuelve a mostrar el contenido real (contador, itinerario, mapa, botón RSVP) sin overlay; abriendo el mismo template de forma directa (fuera de iframe) el overlay se sigue mostrando normal.
+
+### Patrón nuevo: galería de fotos estilo Polaroid (pila swipeable)
+
+Reemplaza la grilla estática 2 columnas (`.gallery`) por una pila de fotos estilo Polaroid (marco blanco, sombra, rotación leve) que se puede arrastrar o navegar con flechas — sobre **15 de los 17 templates** (todos los que tenían grilla de fotos). Quedaron afuera a propósito:
+- `aniversario/carrusel` — ya tiene su propio carrusel swipeable (scroll-snap + flechas + puntos), es la razón de ser del template, no tenía sentido reemplazarlo.
+- `baby-shower/reveal` — no tiene sección de fotos (antes del evento no hay fotos del bebé que mostrar).
+
+- Look **universal, sin paleta por template** (a diferencia de mapa/calendario/CTA): el marco es blanco fijo (`background:#fff`) porque así se ve una Polaroid real en cualquier paleta — evitó la necesidad de tocar colores por archivo, la única variación entre los 15 templates fue reemplazar las 3 líneas viejas (`.gallery`/`.ph`/`#gallery-grid img`, que sí variaban por paleta) por el mismo bloque nuevo.
+- Estructura: `orden` es un array de índices que rota — `siguiente()` manda el índice de encima al final, `anterior()` trae el último al frente. `render()` dibuja como máximo 3 cartas (la de encima interactiva, dos atrás como "peek" con rotación/escala decrecientes) y solo la de encima (`data-top="1"`) tiene el listener de arrastre.
+- Arrastre con **Pointer Events** (`pointerdown`/`pointermove`/`pointerup` + `setPointerCapture`) en vez de touch events — unifica mouse y touch en un solo listener. Umbral de 60px para decidir si el swipe cuenta o la carta vuelve a su lugar.
+- **Gotcha de testing descubierto ahora**: el `left_click_drag` del `computer` tool (CDP) no siempre dispara suficientes eventos `pointermove` intermedios como para cruzar el umbral — un intento de swipe así no hizo nada. Se verificó la lógica real disparando la secuencia de `PointerEvent` a mano vía `javascript_tool` (pointerdown → varios pointermove decrecientes → pointerup), que sí funciona siempre — un drag real de usuario (mouse o touch) genera muchos eventos intermedios de sobra, así que esto es una limitación del tooling de automatización, no del código. Los botones de flecha (`‹`/`›`) sí se probaron con clicks normales sin problema.
+- Verificado en vivo en 3 templates de paletas distintas (quince dark/glam, bodas/botanico claro, cumple-infantil/0-2/dulce rosa) + los tres mecanismos de navegación (drag, flecha siguiente, flecha anterior) — todo consistente, sin errores de consola.
 
 ## Próximo paso
 

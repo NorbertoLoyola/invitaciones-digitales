@@ -321,6 +321,7 @@ const CONFIG = {
 // --- Personalización al ver el ejemplo (overlay con el template de muestra dimmed atrás) ---
 (function(){
   const overlay = document.getElementById('personalizar-overlay');
+  if(window.self !== window.top){ overlay.classList.add('oculto'); return; }
   const input = document.getElementById('p-nombre');
   const input2 = document.getElementById('p-nombre2');
   const btnOk = document.getElementById('p-ok');

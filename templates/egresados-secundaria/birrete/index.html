@@ -120,9 +120,24 @@
 
   .nota-tag{ display:inline-block; padding:12px 20px; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.25); border-radius:4px; font-size:.85rem; margin-top:10px; max-width:300px; line-height:1.6; color:var(--crema); }
 
-  .gallery{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:24px; }
-  .ph{ aspect-ratio:1; background:rgba(212,175,55,.05); border:1px dashed var(--dorado); border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:500; color:var(--crema-suave); text-align:center; padding:8px; }
-  #gallery-grid img{ aspect-ratio:1; object-fit:cover; width:100%; display:block; border:1px solid rgba(212,175,55,.4); border-radius:4px; }
+  .polaroid-wrap{ display:flex; align-items:center; justify-content:center; gap:4px; margin-top:24px; }
+  .polaroid-stack{ position:relative; width:100%; max-width:250px; aspect-ratio:.86; touch-action:pan-y; }
+  .polaroid{
+    position:absolute; inset:0;
+    background:#fff; padding:12px 12px 32px;
+    border-radius:3px;
+    box-shadow:0 12px 26px rgba(0,0,0,.35);
+    transition:transform .35s cubic-bezier(.2,.8,.3,1), opacity .35s ease;
+    will-change:transform;
+  }
+  .polaroid img{ width:100%; height:100%; object-fit:cover; display:block; background:#eee; }
+  .polaroid[data-top="1"]{ cursor:grab; }
+  .polaroid.dragging{ transition:none; cursor:grabbing; }
+  .polaroid.saliendo-izq{ transform:translateX(-160%) rotate(-20deg) !important; opacity:0; }
+  .polaroid.saliendo-der{ transform:translateX(160%) rotate(20deg) !important; opacity:0; }
+  .polaroid-arrow{ flex:0 0 auto; font-size:1.6rem; line-height:1; cursor:pointer; opacity:.45; padding:6px 4px; user-select:none; transition:opacity .2s ease; }
+  .polaroid-arrow:hover{ opacity:.85; }
+  .polaroid-hint{ text-align:center; font-size:.66rem; letter-spacing:.12em; text-transform:uppercase; margin-top:14px; opacity:.55; }
 
   .mensaje-texto{ font-size:1.02rem; line-height:1.85; max-width:310px; margin:20px auto 0; color:var(--crema); }
   .mensaje-firma{ font-family:'Parisienne', cursive; font-size:1.9rem; color:var(--dorado-claro); margin-top:14px; }
@@ -203,7 +218,12 @@
 
   <section id="gallery-section" class="fade-up">
     <h2>Estos años</h2>
-    <div class="gallery" id="gallery-grid"></div>
+    <div class="polaroid-wrap">
+      <div class="polaroid-arrow" id="polaroid-prev">‹</div>
+      <div class="polaroid-stack" id="gallery-grid"></div>
+      <div class="polaroid-arrow" id="polaroid-next">›</div>
+    </div>
+    <div class="polaroid-hint" id="polaroid-hint">Deslizá para ver más</div>
   </section>
 
   <div class="divider"></div>
@@ -326,14 +346,89 @@ CONFIG.itinerario.forEach(item=>{
   itList.appendChild(div);
 });
 
-const gallery = document.getElementById('gallery-grid');
-for(let i=0;i<CONFIG.fotos;i++){
-  const ph = document.createElement('img');
-  ph.src = `img/foto-${i+1}.jpg`;
-  ph.alt = 'Foto ' + (i+1);
-  ph.loading = 'lazy';
-  gallery.appendChild(ph);
-}
+// --- Galeria estilo Polaroid (pila swipeable) ---
+(function(){
+  const stackBox = document.getElementById('gallery-grid');
+  const fotos = [];
+  for(let i=0;i<CONFIG.fotos;i++) fotos.push(`img/foto-${i+1}.jpg`);
+  if(fotos.length === 0) return;
+
+  let orden = fotos.map((_,i)=>i);
+
+  function render(){
+    stackBox.innerHTML = '';
+    const visibles = orden.slice(0, Math.min(3, orden.length));
+    visibles.slice().reverse().forEach((fotoIdx, revI)=>{
+      const desdeAtras = visibles.length - 1 - revI;
+      const div = document.createElement('div');
+      div.className = 'polaroid';
+      const signo = fotoIdx % 2 === 0 ? -1 : 1;
+      const rot = desdeAtras === 0 ? 0 : signo * (4 + desdeAtras * 2);
+      div.style.transform = `translateY(${desdeAtras*7}px) scale(${1 - desdeAtras*0.045}) rotate(${rot}deg)`;
+      div.style.zIndex = String(10 - desdeAtras);
+      if(desdeAtras === 0) div.dataset.top = '1';
+      const img = document.createElement('img');
+      img.src = fotos[fotoIdx];
+      img.alt = 'Foto ' + (fotoIdx + 1);
+      img.loading = 'lazy';
+      div.appendChild(img);
+      stackBox.appendChild(div);
+    });
+    if(orden.length > 1){
+      const top = stackBox.querySelector('.polaroid[data-top="1"]');
+      if(top) attachDrag(top);
+    }
+  }
+
+  function siguiente(){ orden = [...orden.slice(1), orden[0]]; render(); }
+  function anterior(){ orden = [orden[orden.length-1], ...orden.slice(0,-1)]; render(); }
+
+  function irA(direccion){
+    if(orden.length <= 1) return;
+    const top = stackBox.querySelector('.polaroid[data-top="1"]');
+    if(top){
+      top.classList.add(direccion === 'siguiente' ? 'saliendo-izq' : 'saliendo-der');
+      setTimeout(()=> direccion === 'siguiente' ? siguiente() : anterior(), 220);
+    }
+  }
+
+  function attachDrag(el){
+    let startX = 0, dx = 0, activo = false;
+    el.addEventListener('pointerdown', (e)=>{
+      activo = true; dx = 0; startX = e.clientX;
+      el.classList.add('dragging');
+      el.setPointerCapture(e.pointerId);
+    });
+    el.addEventListener('pointermove', (e)=>{
+      if(!activo) return;
+      dx = e.clientX - startX;
+      el.style.transform = `translateX(${dx}px) rotate(${dx/18}deg)`;
+    });
+    function soltar(){
+      if(!activo) return;
+      activo = false;
+      el.classList.remove('dragging');
+      if(dx <= -60){ el.classList.add('saliendo-izq'); setTimeout(siguiente, 220); }
+      else if(dx >= 60){ el.classList.add('saliendo-der'); setTimeout(anterior, 220); }
+      else{ render(); }
+    }
+    el.addEventListener('pointerup', soltar);
+    el.addEventListener('pointercancel', soltar);
+  }
+
+  const prevBtn = document.getElementById('polaroid-prev');
+  const nextBtn = document.getElementById('polaroid-next');
+  if(prevBtn) prevBtn.addEventListener('click', ()=> irA('anterior'));
+  if(nextBtn) nextBtn.addEventListener('click', ()=> irA('siguiente'));
+  if(fotos.length <= 1){
+    if(prevBtn) prevBtn.style.visibility = 'hidden';
+    if(nextBtn) nextBtn.style.visibility = 'hidden';
+    const hint = document.getElementById('polaroid-hint');
+    if(hint) hint.style.display = 'none';
+  }
+
+  render();
+})();
 
 // --- Elementos flotantes ---
 (function(){
