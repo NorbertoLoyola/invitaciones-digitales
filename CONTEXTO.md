@@ -111,12 +111,28 @@ Se agregó `<nav class="navbar">` sticky arriba de todo, con tres links de scrol
 
 `index.html` en la raíz de esta carpeta es el home/catálogo para mostrarle los templates a la prima (quien va a ofrecer el producto): un menú por categoría, cada card abre su template en pestaña nueva (`target="_blank"`). Pensado para publicarse tal cual con GitHub Pages, igual que `aitumiprimeranito` — al estar `index.html` en la raíz del repo, alcanza con subir esta carpeta como repo y activar Settings → Pages. Las rutas de las cards son relativas (`templates/bodas/index.html`, etc.), así que funcionan sin cambios apenas se suba la carpeta completa.
 
+## Egresados — dos categorías nuevas (2026-08-15)
+
+A pedido de un tercero que le recomendó al usuario sumar egresados al catálogo. Se investigó primero en internet (tipografía cinética/interactividad como tendencia 2026 en general; birrete+borla dorada y diplomas/certificados como motivo recurrente específico de egresados) y se confirmó con el usuario que hacían falta **dos categorías separadas**, no una — en Argentina "egresados" es un producto totalmente distinto según la edad:
+
+- **Egresados de secundaria/universidad** (`templates/egresados-secundaria/birrete/`): paleta de gala (azul noche + dorado), tipografía Cormorant Garamond + Parisienne. Animación protagonista: **lanzamiento de birretes** (canvas, dibujados con primitivas — no emoji ni imagen) al tocar "Confirmar asistencia". `color-scheme: dark`.
+- **Egresados de jardín/primaria** (`templates/egresados-primaria/diploma/`): paleta infantil (celeste/amarillo/coral), tipografía Baloo 2 + Caveat. Animación protagonista: **sello "¡Lo logré!"** que se estampa con un keyframe de escala+rotación (CSS puro, sin canvas) al confirmar. `color-scheme: light`.
+
+Ambas siguen el mismo motor `CONFIG` y la misma estructura de secciones que el resto de los templates (hero, countdown, itinerario, nota, galería, mensaje, RSVP).
+
+**Fotos de stock**: 4 por template, buscadas en Unsplash con `claude-in-chrome` (navegador real, no scraping a ciegas) y descargadas vía el botón "Descargar gratis" de cada foto — mismo criterio de curación que en la Fase 3 del catálogo (sin personajes con copyright, sin nombres/fechas reales, ocasión y edad correctas). Aprendizaje nuevo de esta ronda: Unsplash mezcla resultados **Unsplash+ (de pago)** entre los gratuitos en la grilla de búsqueda — hay que abrir cada foto y confirmar que el título de la pestaña diga "Foto gratuita en Unsplash" (no "Foto en Unsplash+") antes de descargar, el ícono superpuesto en la miniatura no siempre es visible/confiable. Las fotos bajan a resolución original (algunas de 10+ MB) — se redimensionaron a 1000px de ancho / calidad JPEG 80 antes de sumarlas al repo, para no inflar el catálogo con imágenes pesadas.
+
+**Bug real encontrado y corregido** probando en vivo con servidor local + `claude-in-chrome`: en `egresados-primaria`, el sello quedaba invisible para siempre después del primer "Confirmar asistencia" — el `setTimeout` que lo hace desaparecer le seteaba `style.opacity = '0'` inline, que tiene más especificidad que la animación CSS y bloqueaba cualquier reintento posterior. Se corrigió limpiando ese inline (`sello.style.opacity = ''`) al inicio de cada clic, antes de re-agregar la clase `.slam`.
+
+**Home actualizado**: dos secciones nuevas sumadas al array `CATALOGO` en `index.html` (mismo patrón que las demás — swatch, desc, mensaje de WhatsApp precargado), verificadas visualmente en el catálogo real antes de cerrar la tarea.
+
 ## Próximo paso
 
-Las seis categorías madre tienen al menos un template generado. Pendiente:
+Las categorías madre tienen al menos un template generado. Pendiente:
 - Variantes `nino`/`nina` de baby shower, bautismo y primera comunión (recoloreo de la variante `neutro`, misma estructura).
 - Subestilos/categorías candidatos de la investigación de mercado que quedaron afuera de esta ronda (ver arriba).
 - Evaluar el motor de plantillas real (`motor/`) que rellene `CONFIG` por cliente en vez de tener que copiar y editar el HTML a mano.
+- Definir seguimiento para cuando el usuario ofrezca las ~5 invitaciones gratis de lanzamiento (ver si vale usar la planilla de RSVP para medir enganche real).
 
 ## Estructura de carpetas creada
 

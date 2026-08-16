@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark only">
+<meta name="theme-color" content="#101A33">
+<title>Fiesta de Egresados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Parisienne&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     MOTOR DE PLANTILLA — CONFIG
+     Todo el contenido editable vive en el objeto CONFIG (abajo,
+     dentro del <script>). Los estilos de acá no deberían tocarse
+     para generar una invitación nueva: sólo se edita CONFIG.
+     Categoría nueva: egresados de secundaria/universidad —
+     protagonizada por un lanzamiento de BIRRETES (canvas) al
+     tocar "Confirmar asistencia". Paleta académica de gala:
+     azul noche + dorado.
+     ============================================================ */
+
+  :root{
+    --noche: #101A33;
+    --noche-suave: #1B2A4A;
+    --dorado: #D4AF37;
+    --dorado-claro: #F0D890;
+    --crema: #F6F1E4;
+    --crema-suave: #C9C4B4;
+    color-scheme: dark;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; color-scheme:dark; background:var(--noche); }
+  body{
+    font-family:'Jost', sans-serif;
+    font-weight:400;
+    color:var(--crema);
+    color-scheme:dark;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(212,175,55,0.10), transparent 38%),
+      radial-gradient(circle at 88% 78%, rgba(212,175,55,0.08), transparent 42%),
+      linear-gradient(180deg, var(--noche) 0%, #0B1327 60%, #070C1C 140%);
+    background-attachment:fixed;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  h1,h2{ font-family:'Cormorant Garamond', serif; font-weight:600; margin:0; }
+  .script{ font-family:'Parisienne', cursive; }
+
+  #cap-canvas{ position:fixed; inset:0; z-index:40; pointer-events:none; }
+
+  .wrap{ max-width:480px; margin:0 auto; position:relative; z-index:1; }
+  section{ padding:62px 28px; text-align:center; }
+
+  .fade-up{ opacity:0; transform:translateY(22px); transition:opacity .9s ease, transform .9s ease; }
+  .fade-up.visible{ opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce){ .fade-up{ opacity:1; transform:none; transition:none; } .floatie{ display:none; } }
+
+  .floaties{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .floatie{ position:absolute; bottom:-12%; opacity:0; line-height:1; animation-name:floatUp; animation-timing-function:ease-in; animation-iteration-count:infinite; }
+  @keyframes floatUp{
+    0%{ transform:translateY(0) translateX(0) rotate(0deg); opacity:0; }
+    8%{ opacity:.55; }
+    92%{ opacity:.4; }
+    100%{ transform:translateY(-112vh) translateX(24px) rotate(18deg); opacity:0; }
+  }
+
+  #hero{ min-height:88vh; display:flex; flex-direction:column; justify-content:center; padding-top:44px; }
+  .eyebrow{ letter-spacing:.2em; text-transform:uppercase; font-size:.82rem; font-weight:500; color:var(--dorado); margin-bottom:14px; }
+  .promo-title{ font-family:'Cormorant Garamond', serif; font-weight:700; font-size:2.7rem; line-height:1.15; color:var(--crema); }
+  .promo-title .script{ display:block; font-size:1.6em; color:var(--dorado-claro); margin-top:2px; }
+  .colegio-name{ margin-top:16px; font-size:1rem; letter-spacing:.04em; color:var(--crema-suave); }
+  .the-date{ margin-top:8px; font-size:.95rem; font-weight:500; color:var(--crema); }
+  .scroll-hint{ margin-top:50px; font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:var(--dorado); opacity:.75; }
+
+  .divider{ width:52px; height:1px; background:var(--dorado); margin:0 auto; opacity:.55; }
+  .divider::after{ content:'🎓'; display:block; font-size:.85rem; margin-top:-11px; }
+
+  .countdown{ display:flex; justify-content:center; gap:12px; margin-top:26px; }
+  .cd-box{ min-width:56px; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.3); border-radius:10px; padding:12px 4px; }
+  .cd-num{ font-family:'Cormorant Garamond', serif; font-weight:700; font-size:1.7rem; color:var(--dorado-claro); }
+  .cd-label{ font-size:.56rem; letter-spacing:.1em; text-transform:uppercase; color:var(--crema-suave); }
+
+  .itinerary-item{ display:flex; align-items:flex-start; gap:16px; text-align:left; max-width:300px; margin:0 auto 20px; }
+  .itinerary-time{ font-family:'Cormorant Garamond', serif; font-weight:700; font-size:1.1rem; color:var(--dorado); min-width:58px; }
+  .itinerary-what{ font-size:.92rem; color:var(--crema); }
+
+  .venue-name{ font-size:1.25rem; font-weight:600; font-family:'Cormorant Garamond', serif; color:var(--dorado-claro); margin-top:6px; }
+  .venue-addr{ font-size:.85rem; color:var(--crema-suave); margin-top:4px; }
+
+  .btn{
+    display:inline-block; margin-top:22px; padding:14px 34px;
+    background:var(--dorado); color:var(--noche);
+    text-decoration:none; font-weight:600; font-size:.82rem; letter-spacing:.04em;
+    border-radius:2px; transition:transform .15s ease, background .2s ease;
+  }
+  .btn:hover{ transform:translateY(-2px); background:var(--dorado-claro); }
+  .btn.outline{ background:transparent; border:1px solid var(--dorado); color:var(--dorado-claro); }
+
+  .nota-tag{ display:inline-block; padding:12px 20px; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.25); border-radius:4px; font-size:.85rem; margin-top:10px; max-width:300px; line-height:1.6; color:var(--crema); }
+
+  .gallery{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:24px; }
+  .ph{ aspect-ratio:1; background:rgba(212,175,55,.05); border:1px dashed var(--dorado); border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:500; color:var(--crema-suave); text-align:center; padding:8px; }
+  #gallery-grid img{ aspect-ratio:1; object-fit:cover; width:100%; display:block; border:1px solid rgba(212,175,55,.4); border-radius:4px; }
+
+  .mensaje-texto{ font-size:1.02rem; line-height:1.85; max-width:310px; margin:20px auto 0; color:var(--crema); }
+  .mensaje-firma{ font-family:'Parisienne', cursive; font-size:1.9rem; color:var(--dorado-claro); margin-top:14px; }
+
+  .rsvp-note{ font-size:.85rem; color:var(--crema-suave); max-width:280px; margin:14px auto 0; line-height:1.6; }
+  .rsvp-input{ display:block; width:100%; max-width:260px; margin:14px auto 0; padding:11px 16px; border-radius:2px; border:1px solid rgba(212,175,55,.4); font-family:inherit; font-size:.88rem; text-align:center; background:rgba(255,255,255,.03); color:var(--crema); }
+  .rsvp-input::placeholder{ color:var(--crema-suave); opacity:.7; }
+
+  footer{ padding:56px 30px 76px; text-align:center; }
+  footer .footer-name{ font-family:'Cormorant Garamond', serif; font-weight:700; font-size:1.5rem; color:var(--dorado-claro); }
+
+  .config-flag{
+    position:fixed; bottom:10px; right:10px; background:var(--dorado); color:var(--noche);
+    font-size:.6rem; padding:4px 8px; border-radius:4px; opacity:.65; font-family:'Jost',sans-serif; z-index:5;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="cap-canvas"></canvas>
+<div class="floaties" id="floaties"></div>
+
+<div class="wrap">
+  <section id="hero" class="fade-up">
+    <div class="eyebrow" id="eyebrow-text"></div>
+    <h1 class="promo-title"><span id="titulo-evento"></span><span class="script" id="promo-name"></span></h1>
+    <div class="colegio-name" id="colegio-name"></div>
+    <div class="the-date" id="the-date"></div>
+    <div class="scroll-hint">Deslizá para ver más ↓</div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="countdown-section" class="fade-up">
+    <h2>La cuenta regresiva</h2>
+    <div class="countdown">
+      <div class="cd-box"><div class="cd-num" id="cd-d">00</div><div class="cd-label">días</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-h">00</div><div class="cd-label">hs</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-m">00</div><div class="cd-label">min</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-s">00</div><div class="cd-label">seg</div></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="itinerary-section" class="fade-up">
+    <h2>El plan de la noche</h2>
+    <div id="itinerary-list" style="margin-top:24px;"></div>
+    <div class="venue-name" id="venue-name"></div>
+    <div class="venue-addr" id="venue-addr"></div>
+    <a class="btn outline" id="maps-btn" href="#" target="_blank" rel="noopener">Cómo llegar</a>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="nota-section" class="fade-up">
+    <h2>Un dato</h2>
+    <div class="nota-tag" id="nota-text"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="gallery-section" class="fade-up">
+    <h2>Estos años</h2>
+    <div class="gallery" id="gallery-grid"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="mensaje-section" class="fade-up">
+    <h2>Un mensaje</h2>
+    <p class="mensaje-texto" id="mensaje-texto"></p>
+    <div class="mensaje-firma" id="mensaje-firma"></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="rsvp-section" class="fade-up">
+    <h2>Confirmá tu asistencia</h2>
+    <p class="rsvp-note" id="rsvp-note"></p>
+    <input type="text" class="rsvp-input" id="rsvp-nombre" placeholder="Tu nombre" autocomplete="name">
+    <a class="btn" id="rsvp-btn" href="#" target="_blank" rel="noopener">Confirmar asistencia</a>
+  </section>
+
+  <footer class="fade-up">
+    <div class="footer-name" id="footer-name"></div>
+    <p style="font-size:.85rem; color:var(--crema-suave); margin-top:10px;" id="footer-note"></p>
+  </footer>
+</div>
+
+<div class="config-flag">TEMPLATE · egresados-secundaria-birrete v1</div>
+
+<script>
+/* ============================================================
+   CONFIG — esto es lo único que se edita por cada cliente.
+   ============================================================ */
+const CONFIG = {
+  tituloEvento: "Fiesta de ",
+  promocion: "Egresados",
+  eyebrow: "¡Lo logramos!",
+  colegio: "Instituto San Martín",
+  fechaTexto: "14 de Noviembre, 2026",
+  fechaCountdown: "2026-11-14T21:00:00",
+  itinerario: [
+    { hora: "21:00", que: "Recepción y brindis" },
+    { hora: "22:00", que: "Cena" },
+    { hora: "23:30", que: "Entrega de diplomas simbólica" },
+    { hora: "00:00", que: "A bailar hasta el amanecer" },
+  ],
+  lugarNombre: "Salón Del Bosque",
+  lugarDireccion: "Av. Libertador 4800, Buenos Aires",
+  mapsUrl: "https://maps.google.com/?q=Salon+Del+Bosque",
+  nota: "Dress code: formal / gala. Cupos limitados — te pedimos confirmar cuanto antes.",
+  fotos: 4,
+  mensaje: "Después de tantos años juntos, llegó el momento de festejarlo como corresponde. Gracias por ser parte de este camino — no sería lo mismo sin vos.",
+  mensajeFirma: "Promoción 2026",
+  rsvpNota: "Por favor confirmá antes del 1° de Noviembre para cerrar el salón con el número exacto.",
+  whatsappNumero: "5491100000000",
+  whatsappMensaje: "¡Hola! Confirmo mi asistencia a la fiesta de egresados 🎓",
+  footerNota: "Gracias por acompañarnos en el cierre de esta etapa.",
+};
+
+// --- Registro de RSVP (Fase 2 del plan comercial: Google Sheet + Apps Script) ---
+const RSVP_LOG_URL = ""; // catalogo demo: vacio a proposito hasta Fase 4 (repo de entregas separado) - ver PLAN-COMERCIAL.md
+function registrarRSVP(datos){
+  if(!RSVP_LOG_URL) return;
+  fetch(RSVP_LOG_URL, {
+    method: 'POST', mode: 'no-cors',
+    headers: {'Content-Type': 'text/plain'},
+    body: JSON.stringify(datos)
+  }).catch(()=>{});
+}
+
+// --- Render ---
+document.getElementById('eyebrow-text').textContent = CONFIG.eyebrow;
+document.getElementById('titulo-evento').textContent = CONFIG.tituloEvento;
+document.getElementById('promo-name').textContent = CONFIG.promocion;
+document.getElementById('colegio-name').textContent = CONFIG.colegio;
+document.getElementById('the-date').textContent = CONFIG.fechaTexto;
+document.getElementById('footer-name').textContent = CONFIG.promocion;
+document.getElementById('footer-note').textContent = CONFIG.footerNota;
+document.getElementById('venue-name').textContent = CONFIG.lugarNombre;
+document.getElementById('venue-addr').textContent = CONFIG.lugarDireccion;
+document.getElementById('maps-btn').href = CONFIG.mapsUrl;
+document.getElementById('nota-text').textContent = CONFIG.nota;
+document.getElementById('mensaje-texto').textContent = CONFIG.mensaje;
+document.getElementById('mensaje-firma').textContent = CONFIG.mensajeFirma;
+document.getElementById('rsvp-note').textContent = CONFIG.rsvpNota;
+document.getElementById('rsvp-btn').addEventListener('click', function(e){
+  e.preventDefault();
+  const nombreInvitado = (document.getElementById('rsvp-nombre').value || '').trim() || 'Un invitado';
+  const mensaje = `Soy ${nombreInvitado}. ${CONFIG.whatsappMensaje}`;
+  registrarRSVP({ evento: document.title, invitado: nombreInvitado, fechaEvento: CONFIG.fechaTexto || '' });
+  window.open(`https://wa.me/${CONFIG.whatsappNumero}?text=${encodeURIComponent(mensaje)}`, '_blank', 'noopener');
+});
+
+const itList = document.getElementById('itinerary-list');
+CONFIG.itinerario.forEach(item=>{
+  const div = document.createElement('div');
+  div.className = 'itinerary-item';
+  div.innerHTML = `<div class="itinerary-time">${item.hora}</div><div class="itinerary-what">${item.que}</div>`;
+  itList.appendChild(div);
+});
+
+const gallery = document.getElementById('gallery-grid');
+for(let i=0;i<CONFIG.fotos;i++){
+  const ph = document.createElement('img');
+  ph.src = `img/foto-${i+1}.jpg`;
+  ph.alt = 'Foto ' + (i+1);
+  ph.loading = 'lazy';
+  gallery.appendChild(ph);
+}
+
+// --- Elementos flotantes ---
+(function(){
+  const container = document.getElementById('floaties');
+  const emojis = ['🎓', '✨', '📜', '⭐'];
+  const count = 9;
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'floatie';
+    const size = 14 + Math.random()*14;
+    el.style.left = (Math.random()*94) + '%';
+    el.style.fontSize = size + 'px';
+    el.textContent = emojis[i % emojis.length];
+    el.style.animationDuration = (15 + Math.random()*10) + 's';
+    el.style.animationDelay = (Math.random()*14) + 's';
+    container.appendChild(el);
+  }
+})();
+
+// --- Lanzamiento de birretes al confirmar ---
+(function(){
+  const canvas = document.getElementById('cap-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let raf = null;
+
+  function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+  resize();
+  addEventListener('resize', resize);
+
+  function burst(){
+    const originX = canvas.width / 2;
+    const originY = canvas.height * 0.85;
+    for(let i=0;i<26;i++){
+      const angle = (-Math.PI/2) + (Math.random()-0.5)*1.3;
+      const speed = 9 + Math.random()*8;
+      particles.push({
+        x: originX + (Math.random()-0.5)*140, y: originY,
+        vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed,
+        size: 26 + Math.random()*14,
+        rot: Math.random()*360, vr: (Math.random()-0.5)*10,
+        vida: 0
+      });
+    }
+    if(!raf) animar();
+  }
+
+  function drawBirrete(size){
+    // Mortero (cuadrado) + borla, dibujado con primitivas de canvas
+    ctx.fillStyle = '#101A33';
+    ctx.fillRect(-size/2, -size/6, size, size/3);
+    ctx.beginPath();
+    ctx.moveTo(0, -size*0.62);
+    ctx.lineTo(size*0.62, 0);
+    ctx.lineTo(0, size*0.62);
+    ctx.lineTo(-size*0.62, 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#D4AF37';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(size*0.5, size*0.35);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(size*0.5, size*0.4, 2.5, 0, Math.PI*2);
+    ctx.fillStyle = '#D4AF37';
+    ctx.fill();
+  }
+
+  function animar(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      p.vy += 0.32;
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.vida++;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI/180);
+      drawBirrete(p.size);
+      ctx.restore();
+    });
+    particles = particles.filter(p => p.y < canvas.height + 60 && p.vida < 220);
+    if(particles.length){ raf = requestAnimationFrame(animar); }
+    else { raf = null; ctx.clearRect(0,0,canvas.width,canvas.height); }
+  }
+
+  document.getElementById('rsvp-btn').addEventListener('click', burst);
+})();
+
+// --- Countdown ---
+function tick(){
+  const target = new Date(CONFIG.fechaCountdown);
+  const now = new Date();
+  let diff = Math.max(0, target - now);
+  document.getElementById('cd-d').textContent = String(Math.floor(diff/(1000*60*60*24))).padStart(2,'0');
+  document.getElementById('cd-h').textContent = String(Math.floor((diff/(1000*60*60))%24)).padStart(2,'0');
+  document.getElementById('cd-m').textContent = String(Math.floor((diff/(1000*60))%60)).padStart(2,'0');
+  document.getElementById('cd-s').textContent = String(Math.floor((diff/1000)%60)).padStart(2,'0');
+}
+tick(); setInterval(tick, 1000);
+
+// --- Fade up on scroll ---
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold:0.25});
+document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
