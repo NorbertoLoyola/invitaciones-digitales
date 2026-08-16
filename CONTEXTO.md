@@ -147,6 +147,18 @@ Implementado primero como prueba en `templates/egresados-secundaria/birrete/inde
 - **Calendario**: link a `https://calendar.google.com/calendar/render?action=TEMPLATE&...` (truco no oficial pero estable y muy usado, sin API key). La hora se convierte de local a UTC con `new Date(CONFIG.fechaCountdown).toISOString()` — funciona correctamente sin importar en qué huso horario esté el invitado. Duración por defecto: 3 horas (no hay un campo de hora de fin en `CONFIG` todavía).
 - Ambos se probaron en vivo con servidor local + `claude-in-chrome`: el mapa carga la dirección real, el link de calendario arma bien texto/fecha/ubicación (verificado parseando la URL generada, no solo mirándola).
 
+### Patrón nuevo: playlist de Spotify embebida (opcional, con fallback curado por categoría)
+
+Scaffolding sumado a los **17 templates del catálogo completo**, anclado en el mismo bloque `#calendar-section`/`calendar-btn` del patrón anterior (verificado por Grep como idéntico en los 17 archivos antes de tocar nada — `#nota-section` no sirve de ancla porque quince y ambos templates de bodas no tienen sección de dress code).
+
+- **Embed**: cualquier URL de `open.spotify.com/...` se vuelve reproducible insertando `/embed` después del dominio: `open.spotify.com/embed/playlist/...`. Truco oficial de Spotify, gratis, sin API key.
+- La sección (`#playlist-section` + `#playlist-divider`) arranca oculta (`display:none`) y solo se muestra si `CONFIG.spotifyUrl` está definida — así ningún template rompe visualmente mientras no haya una URL real cargada.
+- `CONFIG.spotifyUrl` **no se agregó como campo vacío** a ningún `CONFIG` todavía — se va a sumar con la URL real directamente cuando existan las playlists curadas, evitando una pasada de edición redundante.
+- Pregunta correspondiente ya sumada al skill `entregar-invitacion`: se le pregunta al cliente si tiene playlist propia (opcional); si no manda nada, usar la curada por Late para esa categoría (ver más abajo).
+- Verificado en vivo con servidor local + `claude-in-chrome` en 2 templates (quince y cumple-infantil 10-12 años): sin `spotifyUrl`, la sección queda oculta y no hay errores de consola; forzando un `spotifyUrl` de prueba, el iframe se arma con la URL `/embed/` correcta y el widget de Spotify se ve integrado con la paleta de cada template.
+
+**Pendiente**: curar las playlists reales por categoría (una por categoría del catálogo, para la demo y como fallback en entregas reales). Esto requiere buscar/armar playlists en una cuenta de Spotify real — Claude no puede loguearse ni manejar credenciales de terceros bajo ninguna circunstancia, así que esta parte necesita participación activa del usuario (loguearse él mismo y armar las playlists, o pedir una lista de temas sugeridos para armarlas por su cuenta).
+
 ## Próximo paso
 
 Las categorías madre tienen al menos un template generado. Pendiente:

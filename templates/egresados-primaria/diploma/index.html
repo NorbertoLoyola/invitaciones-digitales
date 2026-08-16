@@ -105,6 +105,9 @@
   .map-embed{ width:100%; aspect-ratio:1/1; margin:18px 0; border:2px solid var(--celeste); border-radius:18px; overflow:hidden; }
   .map-embed iframe{ width:100%; height:100%; border:0; display:block; }
   #calendar-section{ padding-top:40px; padding-bottom:40px; }
+  #playlist-section{ padding-top:40px; padding-bottom:40px; }
+  .spotify-embed{ width:100%; margin-top:18px; border-radius:12px; overflow:hidden; }
+  .spotify-embed iframe{ width:100%; height:152px; border:0; display:block; }
 
   .btn{
     display:inline-block; margin-top:20px; padding:14px 32px;
@@ -179,6 +182,13 @@
 
   <section id="calendar-section" class="fade-up">
     <a class="btn outline" id="calendar-btn" href="#" target="_blank" rel="noopener">📅 Añadir a mi calendario</a>
+  </section>
+
+  <div class="divider" id="playlist-divider" style="display:none;"></div>
+
+  <section id="playlist-section" class="fade-up" style="display:none;">
+    <h2>La playlist de la fiesta</h2>
+    <div class="spotify-embed"><iframe id="spotify-frame" src="" loading="lazy" allow="encrypted-media"></iframe></div>
   </section>
 
   <div class="divider"></div>
@@ -286,6 +296,13 @@ document.getElementById('map-frame').src = `https://www.google.com/maps?q=${enco
   });
   document.getElementById('calendar-btn').href = `https://calendar.google.com/calendar/render?${params.toString()}`;
 })();
+
+// --- Playlist de Spotify (opcional - si el cliente no manda la suya, usar la curada por Late para esta categoria) ---
+if (CONFIG.spotifyUrl) {
+  document.getElementById('playlist-divider').style.display = '';
+  document.getElementById('playlist-section').style.display = '';
+  document.getElementById('spotify-frame').src = CONFIG.spotifyUrl.replace('open.spotify.com/', 'open.spotify.com/embed/');
+}
 document.getElementById('nota-text').textContent = CONFIG.nota;
 document.getElementById('mensaje-texto').textContent = CONFIG.mensaje;
 document.getElementById('mensaje-firma').textContent = CONFIG.mensajeFirma;
