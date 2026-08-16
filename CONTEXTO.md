@@ -176,29 +176,20 @@ A diferencia de invitio.events (que bloquea la entrada a la galería con una pre
 - Al tipear, un listener `input` recorre las ~17 cards y les asigna una frase corta generada por categoría (`fraseParaCategoria`, un `switch` con una frase por categoría del `CATALOGO` — ej. "Bodas" → "{Nombre} se casa 💍", "15 años" → "Los 15 de {Nombre} 🎉"), capitalizando la primera letra automáticamente. Si el campo queda vacío, todas las previews vuelven a ocultarse.
 - Verificado en vivo con servidor local + `claude-in-chrome`: tipeando "valentina" aparece "Valentina se casa 💍" / "Los 15 de Valentina 🎉" / "¡Valentina cumple años! 🎂" en las cards correspondientes, en tiempo real y sin recargar; al vaciar el campo, vuelve limpio. Sin errores de consola.
 
-### Patrón nuevo: el nombre viaja hasta la plantilla real (?nombre=... en "Ver ejemplo")
+### Patrón nuevo: overlay de personalización al abrir la plantilla real
 
-A pedido del usuario ("¿no sería bueno que viaje cuando quiera ver la vista previa del template?") — la personalización del catálogo no se queda solo en la card, sigue hasta el template real cuando se toca "Ver ejemplo".
+Primera versión (commit anterior) pasaba el nombre por `?nombre=...` y lo aplicaba **en silencio** al cargar. El usuario pidió cambiarlo: "me parece mejor que esto del nombre esté ligado al momento de que le dé a visualizar" — en bodas hacen falta 2 nombres, no 1, y en baby shower el campo es ambiguo (mamá o papá). Se reemplazó por un **overlay que se muestra siempre** al abrir cualquiera de los 16 templates personalizables, con el template de muestra visible y oscurecido de fondo (`background:rgba(0,0,0,.55)` + `backdrop-filter:blur(3px)`), pidiendo el/los campo(s) exactos de esa categoría.
 
-- El botón "Ver ejemplo" de cada card guarda su URL base en `data-base-href` y el link `href` se actualiza en vivo (misma función `actualizarPreviews()` del catálogo): si hay nombre tipeado, se le agrega `?nombre=<valor codificado>`; si no, vuelve a la URL base.
-- Cada uno de los 16 templates que tienen un campo de nombre individual en su `CONFIG` (todos menos `egresados-secundaria/birrete`, que es la fiesta de toda una promoción y no tiene nombre propio) trae, justo después del cierre del objeto `CONFIG` y antes del comentario "Registro de RSVP", un override chico:
-  ```js
-  (function(){
-    const nombre = new URLSearchParams(location.search).get('nombre');
-    if(!nombre) return;
-    if(CONFIG.mensajeFirma === CONFIG.<campo>) CONFIG.mensajeFirma = nombre;
-    CONFIG.<campo> = nombre;
-  })();
-  ```
-- El nombre del campo (`<campo>`) varía según la categoría — se investigó por Grep el `CONFIG` real de los 17 templates antes de tocar nada, y quedó así:
-  - `nombre`: 15 años, cumpleaños infantil (las 5 subcategorías), bautismo, primera comunión, cumpleaños de adultos.
-  - `nombreUno`: bodas (ambos subestilos) y aniversario — se personaliza solo el primer nombre, el segundo se deja con el dato demo (para dos novios reales, se cargan ambos a mano al momento de la entrega).
-  - `nombreMama`: baby shower (ambas variantes).
-  - `novia`: despedida de soltera.
-  - `alumno`: egresados de jardín/primaria.
-  - Sin campo (no personalizable por esta vía): egresados de secundaria/universidad.
-- El chequeo `if(CONFIG.mensajeFirma === CONFIG.<campo>)` evita pisar firmas genéricas tipo "Con cariño, Mamá y Papá" (cumpleaños infantil, primera comunión, bautismo) — solo reemplaza la firma cuando es una copia exacta del nombre demo (quince, cumpleaños de adultos, baby shower/reveal, despedida de soltera, egresados/primaria, o el primer nombre en bodas/aniversario cuando corresponde).
-- Verificado en vivo: `?nombre=Delfina` en `quince` reemplaza tanto el nombre del hero como la firma del mensaje; `?nombre=camila` en `bodas/rustico` deja "camila & Tomás" (segundo nombre intacto); sin el parámetro, cada template sigue mostrando su dato demo de siempre. Sin errores de consola en ningún caso.
+- El botón "Ver ejemplo" del catálogo sigue armando `?nombre=<valor>` (sin cambios en `index.html`), pero ahora es solo un **pre-llenado** del primer campo del overlay — nunca se aplica solo. Confirmado en vivo: con `?nombre=Prellenada` en la URL, el input aparece prellenado pero `CONFIG.nombre` sigue en el valor demo hasta que se toca "Ver con mi nombre".
+- Overlay reutilizable insertado como hijo directo de `<body>` en cada template, con CSS propio (`.personalizar-overlay` / `.personalizar-box`) — importante: se fuerza `color-scheme:light` explícito en la caja, porque templates con `<meta name="color-scheme" content="dark only">` (quince, etc.) pintaban el input con estilos nativos oscuros por herencia si no se lo pisaba.
+- Dos botones: "Ver con mi nombre" (o "...estos nombres" en bodas/aniversario) aplica y cierra; "Ver con datos de muestra" cierra sin tocar nada. También cierra al tocar el fondo oscuro fuera de la caja.
+- Al confirmar, una función `aplicar(nombre)` actualiza `CONFIG` y reescribe en vivo (sin recargar la página) los nodos del DOM que muestran el nombre — no se depende de recargar ni de adivinar qué tocar: se investigó por Grep, antes de escribir nada, exactamente qué ids de DOM y qué claves de `CONFIG` usa cada template. Tres formas según la categoría:
+  - **1 nombre** (quince, cumpleaños infantil x5, bautismo, primera comunión, cumpleaños de adultos, baby shower x2, despedida de soltera, egresados/primaria): un campo (`nombre`/`nombreMama`/`novia`/`alumno` según categoría) y dos nodos de DOM (`<hero>-name` + `footer-name`).
+  - **2 nombres, nodos separados** (bodas x2): dos campos (`nombreUno`/`nombreDos`), dos inputs en el overlay, nodos `name-one`/`name-two` + `footer-names` combinado.
+  - **2 nombres, nodo combinado** (aniversario): igual que bodas pero el hero es un solo nodo (`pareja-name`) con "Uno & Dos" ya armado.
+  - **Excepción sin personalizar**: `egresados-secundaria/birrete` no tiene campo de nombre individual (`tituloEvento`/`promocion` son genéricos de toda la promoción) — no lleva overlay.
+- `CONFIG.mensajeFirma` solo se pisa cuando es copia exacta del nombre demo (evita romper firmas tipo "Con cariño, Mamá y Papá"); `CONFIG.whatsappMensaje` se actualiza con `.replaceAll(nombreDemo, nombreNuevo)` para que el botón de RSVP mande el mensaje ya personalizado. Caso especial `cumple-infantil/0-2-anos/dulce`: no tiene `whatsappMensaje` sino `rsvpContactos[]` (RSVP doble mamá/papá) — se hace el mismo `.replaceAll` sobre `c.mensaje` de cada contacto, mutando los objetos in-place (el botón ya creado lee `c.mensaje` por referencia al hacer click, así que el cambio se refleja sin volver a crear los botones).
+- Verificado en vivo con servidor local + `claude-in-chrome` en los tres patrones (quince 1-nombre, bodas/rustico y aniversario 2-nombres, dulce con `rsvpContactos`): nombre/firma/whatsapp quedan consistentes tras confirmar, "Ver con datos de muestra" cierra sin aplicar nada, y sin errores de consola en ningún caso.
 
 ## Próximo paso
 

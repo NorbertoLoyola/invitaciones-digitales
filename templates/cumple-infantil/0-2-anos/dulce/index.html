@@ -146,6 +146,36 @@
   }
   #floating-cta.visible{ transform:translate(-50%, 0); }
   @media (prefers-reduced-motion: reduce){ #floating-cta{ transition:none; } }
+
+  .personalizar-overlay{
+    position:fixed; inset:0; z-index:100;
+    background:rgba(0,0,0,.55);
+    backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px);
+    display:flex; align-items:center; justify-content:center;
+    padding:24px;
+  }
+  .personalizar-overlay.oculto{ display:none; }
+  .personalizar-box{
+    color-scheme:light;
+    background:#fff; color:#2a2a2a;
+    border-radius:20px; padding:30px 26px;
+    max-width:340px; width:100%;
+    box-shadow:0 24px 60px rgba(0,0,0,.4);
+    text-align:center;
+  }
+  .personalizar-box h3{ font-family:inherit; font-size:1.1rem; margin:0 0 8px; color:#2a2a2a; }
+  .personalizar-box p{ font-size:.83rem; color:#777; margin:0 0 18px; line-height:1.5; }
+  .personalizar-box label{ display:block; text-align:left; font-size:.76rem; font-weight:600; color:#555; margin:14px 0 6px; }
+  .personalizar-box label:first-of-type{ margin-top:0; }
+  .personalizar-box input{
+    width:100%; padding:11px 14px; border-radius:10px;
+    border:1.5px solid #ddd; background:#fff; font-size:.92rem; color:#2a2a2a;
+    font-family:inherit; box-sizing:border-box;
+  }
+  .personalizar-box input:focus{ outline:none; border-color:#aaa; }
+  .personalizar-ctas{ margin-top:22px; display:flex; flex-direction:column; gap:10px; }
+  .personalizar-ctas button.btn{ width:100%; margin-top:0; border:none; cursor:pointer; font-family:inherit; }
+  .personalizar-skip{ background:none; border:none; color:#999; font-size:.78rem; text-decoration:underline; cursor:pointer; padding:4px; font-family:inherit; }
   .btn-row{ display:flex; flex-direction:column; gap:10px; align-items:center; margin-top:16px; }
 
   .nota-tag{ display:inline-block; padding:12px 20px; background:#fff; border-radius:20px; font-size:.85rem; margin-top:10px; max-width:300px; line-height:1.5; box-shadow:0 6px 16px rgba(232,137,158,0.15); }
@@ -171,6 +201,19 @@
 </style>
 </head>
 <body>
+
+<div class="personalizar-overlay" id="personalizar-overlay">
+  <div class="personalizar-box">
+    <h3>Antes de ver el ejemplo</h3>
+    <p>Así se ve la invitación con tu nombre. Si preferís, la podés ver con el nombre de muestra.</p>
+    <label for="p-nombre">Nombre del cumpleañero/a</label>
+    <input type="text" id="p-nombre" placeholder="Ej: Ámbar" autocomplete="off">
+    <div class="personalizar-ctas">
+      <button class="btn" id="p-ok" type="button">Ver con mi nombre</button>
+      <button class="personalizar-skip" id="p-skip" type="button">Ver con datos de muestra</button>
+    </div>
+  </div>
+</div>
 
 <a id="floating-cta" class="btn" href="#rsvp-section">Confirmar asistencia</a>
 
@@ -302,12 +345,35 @@ const CONFIG = {
   footerNota: "Gracias por ser parte de este momento.",
 };
 
-// --- Personalización desde el catálogo (?nombre=... en la URL de "Ver ejemplo") ---
+// --- Personalización al ver el ejemplo (overlay con el template de muestra dimmed atrás) ---
 (function(){
-  const nombre = new URLSearchParams(location.search).get('nombre');
-  if(!nombre) return;
-  if(CONFIG.mensajeFirma === CONFIG.nombre) CONFIG.mensajeFirma = nombre;
-  CONFIG.nombre = nombre;
+  const overlay = document.getElementById('personalizar-overlay');
+  const input = document.getElementById('p-nombre');
+  const btnOk = document.getElementById('p-ok');
+  const btnSkip = document.getElementById('p-skip');
+
+  const prellenado = new URLSearchParams(location.search).get('nombre');
+  if(prellenado) input.value = prellenado;
+
+  function cerrar(){ overlay.classList.add('oculto'); }
+
+  function aplicar(nombre){
+    const demo = CONFIG.nombre;
+    if(CONFIG.mensajeFirma === demo) CONFIG.mensajeFirma = nombre;
+    CONFIG.rsvpContactos.forEach(c => c.mensaje = c.mensaje.replaceAll(demo, nombre));
+    CONFIG.nombre = nombre;
+    document.getElementById('kid-name').textContent = nombre;
+    document.getElementById('footer-name').textContent = nombre;
+    document.getElementById('mensaje-firma').textContent = CONFIG.mensajeFirma;
+  }
+
+  btnOk.addEventListener('click', function(){
+    const nombre = input.value.trim();
+    if(nombre) aplicar(nombre);
+    cerrar();
+  });
+  btnSkip.addEventListener('click', cerrar);
+  overlay.addEventListener('click', function(e){ if(e.target === overlay) cerrar(); });
 })();
 
 // --- Registro de RSVP (Fase 2 del plan comercial: Google Sheet + Apps Script) ---
