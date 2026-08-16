@@ -157,7 +157,7 @@ Scaffolding sumado a los **17 templates del catálogo completo**, anclado en el 
 - Pregunta correspondiente ya sumada al skill `entregar-invitacion`: se le pregunta al cliente si tiene playlist propia (opcional); si no manda nada, usar la curada por Late para esa categoría (ver más abajo).
 - Verificado en vivo con servidor local + `claude-in-chrome` en 2 templates (quince y cumple-infantil 10-12 años): sin `spotifyUrl`, la sección queda oculta y no hay errores de consola; forzando un `spotifyUrl` de prueba, el iframe se arma con la URL `/embed/` correcta y el widget de Spotify se ve integrado con la paleta de cada template.
 
-**Pendiente**: curar las playlists reales por categoría (una por categoría del catálogo, para la demo y como fallback en entregas reales). Esto requiere buscar/armar playlists en una cuenta de Spotify real — Claude no puede loguearse ni manejar credenciales de terceros bajo ninguna circunstancia, así que esta parte necesita participación activa del usuario (loguearse él mismo y armar las playlists, o pedir una lista de temas sugeridos para armarlas por su cuenta).
+**Pendiente (pausado 2026-08-16 a pedido del usuario)**: curar las playlists reales por categoría (una por categoría del catálogo, para la demo y como fallback en entregas reales). Esto requiere buscar/armar playlists en una cuenta de Spotify real — Claude no puede loguearse ni manejar credenciales de terceros bajo ninguna circunstancia, así que esta parte necesita participación activa del usuario (loguearse él mismo y armar las playlists, o pedir una lista de temas sugeridos para armarlas por su cuenta). El usuario todavía no tiene cuenta de Spotify — retomar cuando la tenga y esté en la compu (venía trabajando desde el celular).
 
 ## Próximo paso
 
