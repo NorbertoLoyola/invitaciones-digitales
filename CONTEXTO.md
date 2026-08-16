@@ -134,7 +134,7 @@ Se recorrió `invitio.events/es/crear` (flujo completo: elegir evento → elegir
 2. **Mapa embebido interactivo** — en vez de solo un botón "Cómo llegar" que abre afuera, un iframe real de Google Maps dentro del scroll. **Implementado** (ver abajo).
 3. **Botón "Añadir a mi calendario"** — agrega el evento al Google Calendar del invitado con un tap. **Implementado** (ver abajo).
 4. **Personalización instantánea en el selector de plantillas**: antes de mostrar la galería, pregunta el nombre del evento y lo aplica en vivo a las miniaturas. No implementado — cambiaría el flujo del catálogo (`index.html`), evaluar si vale la pena para una tanda futura.
-5. **CTA flotante fijo** durante todo el scroll de la plantilla. No implementado — el catálogo ya tiene su propio patrón de card con dos CTA, es un caso distinto (selector vs. invitación individual).
+5. **CTA flotante fijo** durante todo el scroll de la plantilla. **Implementado** (ver abajo) — se aplicó al botón de RSVP de la invitación individual (no al catálogo, que ya tiene su propio patrón de card con dos CTA; son casos distintos).
 6. **Galería en pila estilo Polaroid con swipe** en vez de grilla estática. No implementado — cambio visual más grande, evaluar a futuro.
 
 Confirma también que "Graduación" es una categoría de mercado real y separada — valida la decisión de sumar egresados.
@@ -158,6 +158,15 @@ Scaffolding sumado a los **17 templates del catálogo completo**, anclado en el 
 - Verificado en vivo con servidor local + `claude-in-chrome` en 2 templates (quince y cumple-infantil 10-12 años): sin `spotifyUrl`, la sección queda oculta y no hay errores de consola; forzando un `spotifyUrl` de prueba, el iframe se arma con la URL `/embed/` correcta y el widget de Spotify se ve integrado con la paleta de cada template.
 
 **Pendiente (pausado 2026-08-16 a pedido del usuario)**: curar las playlists reales por categoría (una por categoría del catálogo, para la demo y como fallback en entregas reales). Esto requiere buscar/armar playlists en una cuenta de Spotify real — Claude no puede loguearse ni manejar credenciales de terceros bajo ninguna circunstancia, así que esta parte necesita participación activa del usuario (loguearse él mismo y armar las playlists, o pedir una lista de temas sugeridos para armarlas por su cuenta). El usuario todavía no tiene cuenta de Spotify — retomar cuando la tenga y esté en la compu (venía trabajando desde el celular).
+
+### Patrón nuevo: CTA flotante "Confirmar asistencia" (aparece al salir del hero, se oculta en el RSVP real)
+
+Implementado primero como prueba en `templates/quince/index.html`, verificado en vivo con servidor local + `claude-in-chrome` (scroll real, no programático — el `IntersectionObserver` no reacciona de forma confiable a saltos de scroll programáticos como `scrollTo`/`scrollIntoView` dentro de este entorno de automatización; con un scroll real de mouse-wheel sí funciona siempre, que es el caso real de un usuario) y luego **propagado a los 17 templates del catálogo completo** (confirmado con el usuario antes de replicarlo).
+
+- Reutiliza la clase `.btn` ya existente de cada template (mismo color de acento que el resto de los botones), así no hace falta definir una paleta nueva por template — solo se agregan las reglas de `position:fixed` con un ID (`#floating-cta`) que gana por especificidad sobre `.btn`.
+- Ancla en `#hero` y `#rsvp-section` (ambos ids universales en las 17 plantillas, confirmado por Grep antes de tocar nada): un solo `IntersectionObserver` observa los dos, y el CTA se muestra solo cuando ninguno de los dos está en pantalla (`!heroVisible && !rsvpVisible`) — así no aparece sobre el hero ni duplica el botón real de RSVP cuando el invitado ya llegó a esa sección.
+- El link es un `<a href="#rsvp-section">` simple — aprovecha el `scroll-behavior:smooth` que ya tiene el `<html>` de cada template, no hace falta JS de scroll propio.
+- Colocado como hijo directo de `<body>` (antes de `.wrap` u otros elementos), para evitar el problema de "containing block" de `position:fixed` — si un ancestro tuviera `transform` (como las secciones `.fade-up` lo tienen mientras animan), el fixed dejaría de anclarse al viewport.
 
 ## Próximo paso
 

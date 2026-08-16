@@ -129,6 +129,17 @@
   .btn:hover{ background:var(--acento-osc); }
   .btn.outline{ background:transparent; border:2px solid var(--acento); color:var(--acento-osc); }
 
+  #floating-cta{
+    position:fixed; bottom:22px; left:50%;
+    transform:translate(-50%, 160%);
+    margin:0; z-index:50;
+    box-shadow:0 8px 28px rgba(0,0,0,.4);
+    transition: transform .35s ease;
+    white-space:nowrap;
+  }
+  #floating-cta.visible{ transform:translate(-50%, 0); }
+  @media (prefers-reduced-motion: reduce){ #floating-cta{ transition:none; } }
+
   .nota-tag{ display:inline-block; padding:10px 20px; background:rgba(255,255,255,.55); border-radius:16px; font-size:.85rem; margin-top:10px; max-width:300px; line-height:1.5; }
 
   .gallery{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:24px; }
@@ -152,6 +163,8 @@
 </style>
 </head>
 <body>
+
+<a id="floating-cta" class="btn" href="#rsvp-section">Confirmar asistencia</a>
 
 <div class="floaties" id="floaties"></div>
 
@@ -392,6 +405,24 @@ const observer = new IntersectionObserver((entries)=>{
   entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
 }, {threshold:0.25});
 document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+
+// --- CTA flotante (aparece al salir del hero, se oculta al llegar al RSVP real) ---
+(function(){
+  const cta = document.getElementById('floating-cta');
+  const hero = document.getElementById('hero');
+  const rsvp = document.getElementById('rsvp-section');
+  if(!cta || !hero || !rsvp) return;
+  let heroVisible = true, rsvpVisible = false;
+  const ctaObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.target===hero) heroVisible = entry.isIntersecting;
+      if(entry.target===rsvp) rsvpVisible = entry.isIntersecting;
+    });
+    cta.classList.toggle('visible', !heroVisible && !rsvpVisible);
+  }, {threshold:0.15});
+  ctaObserver.observe(hero);
+  ctaObserver.observe(rsvp);
+})();
 </script>
 </body>
 </html>
