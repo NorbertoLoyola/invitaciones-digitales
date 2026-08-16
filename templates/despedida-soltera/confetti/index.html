@@ -85,6 +85,9 @@
 
   .venue-name{ font-size:1.2rem; font-weight:700; color:var(--rosa-osc); margin-top:6px; }
   .venue-addr{ font-size:.85rem; color:var(--carbon-suave); margin-top:4px; }
+  .map-embed{ width:100%; aspect-ratio:1/1; margin:18px 0; border:1px solid rgba(217,107,150,.3); border-radius:8px; overflow:hidden; }
+  .map-embed iframe{ width:100%; height:100%; border:0; display:block; }
+  #calendar-section{ padding-top:40px; padding-bottom:40px; }
 
   .btn{
     display:inline-block; margin-top:20px; padding:14px 32px;
@@ -149,7 +152,14 @@
     <div id="itinerary-list" style="margin-top:24px;"></div>
     <div class="venue-name" id="venue-name"></div>
     <div class="venue-addr" id="venue-addr"></div>
-    <a class="btn outline" id="maps-btn" href="#" target="_blank" rel="noopener">Cómo llegar</a>
+    <div class="map-embed"><iframe id="map-frame" src="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+    <a class="btn outline" id="maps-btn" href="#" target="_blank" rel="noopener">Abrir en Google Maps</a>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="calendar-section" class="fade-up">
+    <a class="btn outline" id="calendar-btn" href="#" target="_blank" rel="noopener">📅 Añadir a mi calendario</a>
   </section>
 
   <div class="divider"></div>
@@ -239,6 +249,22 @@ document.getElementById('footer-note').textContent = CONFIG.footerNota;
 document.getElementById('venue-name').textContent = CONFIG.lugarNombre;
 document.getElementById('venue-addr').textContent = CONFIG.lugarDireccion;
 document.getElementById('maps-btn').href = CONFIG.mapsUrl;
+document.getElementById('map-frame').src = `https://www.google.com/maps?q=${encodeURIComponent(CONFIG.lugarDireccion)}&output=embed`;
+
+// --- Boton "Añadir a mi calendario" (Google Calendar, sin API key) ---
+(function(){
+  const inicio = new Date(CONFIG.fechaCountdown);
+  const fin = new Date(inicio.getTime() + 3 * 60 * 60 * 1000); // 3hs de duracion por defecto
+  const fmt = d => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: document.title,
+    dates: `${fmt(inicio)}/${fmt(fin)}`,
+    location: `${CONFIG.lugarNombre}, ${CONFIG.lugarDireccion}`,
+    details: CONFIG.mensaje,
+  });
+  document.getElementById('calendar-btn').href = `https://calendar.google.com/calendar/render?${params.toString()}`;
+})();
 document.getElementById('nota-text').textContent = CONFIG.nota;
 document.getElementById('mensaje-texto').textContent = CONFIG.mensaje;
 document.getElementById('mensaje-firma').textContent = CONFIG.mensajeFirma;

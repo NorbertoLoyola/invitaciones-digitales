@@ -126,6 +126,27 @@ Ambas siguen el mismo motor `CONFIG` y la misma estructura de secciones que el r
 
 **Home actualizado**: dos secciones nuevas sumadas al array `CATALOGO` en `index.html` (mismo patrón que las demás — swatch, desc, mensaje de WhatsApp precargado), verificadas visualmente en el catálogo real antes de cerrar la tarea.
 
+## Análisis de competencia — invitio.events (2026-08-16)
+
+Se recorrió `invitio.events/es/crear` (flujo completo: elegir evento → elegir plantilla → preview) buscando funcionalidades para adoptar como **patrón/interacción**, no contenido (mismo criterio que ya se usa con el copyright de fotos). Hallazgos, de más a menos fuertes:
+
+1. **Playlist de Spotify embebida** ("Playlist de la Party") — widget oficial de Spotify, reproducible/guardable desde la invitación. No implementado todavía — requiere elegir/crear la playlist real por evento, es más una decisión de contenido que de código.
+2. **Mapa embebido interactivo** — en vez de solo un botón "Cómo llegar" que abre afuera, un iframe real de Google Maps dentro del scroll. **Implementado** (ver abajo).
+3. **Botón "Añadir a mi calendario"** — agrega el evento al Google Calendar del invitado con un tap. **Implementado** (ver abajo).
+4. **Personalización instantánea en el selector de plantillas**: antes de mostrar la galería, pregunta el nombre del evento y lo aplica en vivo a las miniaturas. No implementado — cambiaría el flujo del catálogo (`index.html`), evaluar si vale la pena para una tanda futura.
+5. **CTA flotante fijo** durante todo el scroll de la plantilla. No implementado — el catálogo ya tiene su propio patrón de card con dos CTA, es un caso distinto (selector vs. invitación individual).
+6. **Galería en pila estilo Polaroid con swipe** en vez de grilla estática. No implementado — cambio visual más grande, evaluar a futuro.
+
+Confirma también que "Graduación" es una categoría de mercado real y separada — valida la decisión de sumar egresados.
+
+### Patrón nuevo: mapa embebido + "Añadir a calendario" (sin API key, sin costo)
+
+Implementado primero como prueba en `templates/egresados-secundaria/birrete/index.html`, y luego **propagado a los 17 templates del catálogo completo** (confirmado con el usuario antes de replicarlo). El campo `text` del link de calendario se generalizó a `document.title` (en vez del `CONFIG.tituloEvento+promocion` específico de egresados) porque cada template usa nombres de campo distintos para el título del evento — así el snippet queda idéntico y copiable en cualquier template nuevo. Verificado en vivo en 3 paletas bien distintas (quince dark/glam, cumple-infantil 10-12 neón, bodas botánico claro) — se adapta bien en las tres.
+
+- **Mapa**: `<iframe src="https://www.google.com/maps?q={CONFIG.lugarDireccion}&output=embed">` — el truco `output=embed` de Google Maps no requiere API key ni facturación (a diferencia del Maps Embed API oficial). Se agregó dentro de la sección de lugar/itinerario, con el botón "Cómo llegar" renombrado a "Abrir en Google Maps" como acción secundaria.
+- **Calendario**: link a `https://calendar.google.com/calendar/render?action=TEMPLATE&...` (truco no oficial pero estable y muy usado, sin API key). La hora se convierte de local a UTC con `new Date(CONFIG.fechaCountdown).toISOString()` — funciona correctamente sin importar en qué huso horario esté el invitado. Duración por defecto: 3 horas (no hay un campo de hora de fin en `CONFIG` todavía).
+- Ambos se probaron en vivo con servidor local + `claude-in-chrome`: el mapa carga la dirección real, el link de calendario arma bien texto/fecha/ubicación (verificado parseando la URL generada, no solo mirándola).
+
 ## Próximo paso
 
 Las categorías madre tienen al menos un template generado. Pendiente:
