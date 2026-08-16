@@ -133,7 +133,7 @@ Se recorrió `invitio.events/es/crear` (flujo completo: elegir evento → elegir
 1. **Playlist de Spotify embebida** ("Playlist de la Party") — widget oficial de Spotify, reproducible/guardable desde la invitación. No implementado todavía — requiere elegir/crear la playlist real por evento, es más una decisión de contenido que de código.
 2. **Mapa embebido interactivo** — en vez de solo un botón "Cómo llegar" que abre afuera, un iframe real de Google Maps dentro del scroll. **Implementado** (ver abajo).
 3. **Botón "Añadir a mi calendario"** — agrega el evento al Google Calendar del invitado con un tap. **Implementado** (ver abajo).
-4. **Personalización instantánea en el selector de plantillas**: antes de mostrar la galería, pregunta el nombre del evento y lo aplica en vivo a las miniaturas. No implementado — cambiaría el flujo del catálogo (`index.html`), evaluar si vale la pena para una tanda futura.
+4. **Personalización instantánea en el selector de plantillas**: antes de mostrar la galería, pregunta el nombre del evento y lo aplica en vivo a las miniaturas. **Implementado** (ver abajo) — con una variante más suave: no bloquea el acceso al catálogo, es un campo opcional arriba de los chips de filtro.
 5. **CTA flotante fijo** durante todo el scroll de la plantilla. **Implementado** (ver abajo) — se aplicó al botón de RSVP de la invitación individual (no al catálogo, que ya tiene su propio patrón de card con dos CTA; son casos distintos).
 6. **Galería en pila estilo Polaroid con swipe** en vez de grilla estática. No implementado — cambio visual más grande, evaluar a futuro.
 
@@ -167,6 +167,14 @@ Implementado primero como prueba en `templates/quince/index.html`, verificado en
 - Ancla en `#hero` y `#rsvp-section` (ambos ids universales en las 17 plantillas, confirmado por Grep antes de tocar nada): un solo `IntersectionObserver` observa los dos, y el CTA se muestra solo cuando ninguno de los dos está en pantalla (`!heroVisible && !rsvpVisible`) — así no aparece sobre el hero ni duplica el botón real de RSVP cuando el invitado ya llegó a esa sección.
 - El link es un `<a href="#rsvp-section">` simple — aprovecha el `scroll-behavior:smooth` que ya tiene el `<html>` de cada template, no hace falta JS de scroll propio.
 - Colocado como hijo directo de `<body>` (antes de `.wrap` u otros elementos), para evitar el problema de "containing block" de `position:fixed` — si un ancestro tuviera `transform` (como las secciones `.fade-up` lo tienen mientras animan), el fixed dejaría de anclarse al viewport.
+
+### Patrón nuevo: personalización instantánea en el catálogo (`index.html`)
+
+A diferencia de invitio.events (que bloquea la entrada a la galería con una pregunta previa), se implementó como un campo **opcional** arriba de la barra de chips: "¿Para quién es la fiesta?". No hay backend ni persistencia — es puro JS en el cliente, se resetea al recargar.
+
+- Cada card del catálogo tiene un `.card-preview` oculto (`max-height:0; opacity:0`) entre el eyebrow de categoría y el título del estilo.
+- Al tipear, un listener `input` recorre las ~17 cards y les asigna una frase corta generada por categoría (`fraseParaCategoria`, un `switch` con una frase por categoría del `CATALOGO` — ej. "Bodas" → "{Nombre} se casa 💍", "15 años" → "Los 15 de {Nombre} 🎉"), capitalizando la primera letra automáticamente. Si el campo queda vacío, todas las previews vuelven a ocultarse.
+- Verificado en vivo con servidor local + `claude-in-chrome`: tipeando "valentina" aparece "Valentina se casa 💍" / "Los 15 de Valentina 🎉" / "¡Valentina cumple años! 🎂" en las cards correspondientes, en tiempo real y sin recargar; al vaciar el campo, vuelve limpio. Sin errores de consola.
 
 ## Próximo paso
 

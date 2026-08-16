@@ -193,6 +193,29 @@
 
   main{ position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:0 24px 100px; scroll-margin-top:64px; }
 
+  /* ---------- Personalización instantánea: nombre opcional que se refleja en vivo en cada card ---------- */
+  .personalizador{ position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:0 24px 28px; text-align:center; }
+  .personalizador label{ display:block; font-size:.86rem; font-weight:600; color:var(--ciruela); margin-bottom:10px; }
+  .personalizador label span{ font-weight:400; color:var(--ciruela-suave); }
+  .personalizador input{
+    width:100%; max-width:340px;
+    padding:12px 20px; border-radius:24px;
+    border:1.5px solid var(--linea); background:#fff;
+    font-family:'Jost', sans-serif; font-size:.95rem; color:var(--ciruela);
+    text-align:center;
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  .personalizador input:focus{ outline:none; border-color:var(--terracota); box-shadow:0 0 0 3px rgba(196,105,75,0.14); }
+  .personalizador input::placeholder{ color:var(--ciruela-suave); opacity:.6; }
+
+  .card-preview{
+    font-family:'Fraunces', serif; font-style:italic; font-size:.92rem;
+    color:var(--terracota-osc); margin:-2px 0 10px;
+    max-height:0; opacity:0; overflow:hidden;
+    transition:opacity .25s ease, max-height .25s ease, margin .25s ease;
+  }
+  .card-preview.visible{ max-height:2.4em; opacity:1; margin-bottom:14px; }
+
   /* ---------- Barra de filtros: salto rapido por categoria ---------- */
   .filter-bar{
     position:sticky; top:53px; z-index:40;
@@ -343,6 +366,11 @@
   </div>
 </section>
 
+<section class="personalizador">
+  <label for="nombre-input">¿Para quién es la fiesta? <span>(opcional — vas a ver tu nombre reflejado en cada estilo)</span></label>
+  <input type="text" id="nombre-input" placeholder="Ej: Martina" autocomplete="off">
+</section>
+
 <div class="filter-bar">
   <div class="filter-scroll" id="filterScroll"></div>
 </div>
@@ -472,6 +500,7 @@ CATALOGO.forEach(cat=>{
     card.innerHTML = `
       <div>
         <div class="card-eyebrow"><span class="swatch-dot"></span>${cat.categoria}</div>
+        <div class="card-preview" data-categoria="${cat.categoria}"></div>
         <h3>${item.nombre}</h3>
         <p>${item.desc}</p>
       </div>
@@ -486,6 +515,40 @@ CATALOGO.forEach(cat=>{
   section.appendChild(grid);
   main.appendChild(section);
 });
+
+// --- Personalización instantánea: el nombre tipeado se refleja en vivo en cada card ---
+(function(){
+  function fraseParaCategoria(categoria, nombre){
+    switch(categoria){
+      case 'Bodas': return `${nombre} se casa 💍`;
+      case '15 años': return `Los 15 de ${nombre} 🎉`;
+      case 'Cumpleaños infantil': return `¡${nombre} cumple años! 🎂`;
+      case 'Baby shower': return `Ya casi llega ${nombre} 👶`;
+      case 'Bautismo': return `El bautismo de ${nombre}`;
+      case 'Primera comunión': return `La comunión de ${nombre}`;
+      case 'Cumpleaños de adultos': return `${nombre} cumple años 🥂`;
+      case 'Despedida de soltera': return `La despedida de ${nombre}`;
+      case 'Aniversario': return `El aniversario de ${nombre} 💛`;
+      case 'Egresados de secundaria/universidad': return `${nombre} se recibe 🎓`;
+      case 'Egresados de jardín/primaria': return `${nombre} se gradúa 🎓`;
+      default: return `¡Felicidades, ${nombre}!`;
+    }
+  }
+
+  const nombreInput = document.getElementById('nombre-input');
+  const previews = Array.from(document.querySelectorAll('.card-preview'));
+
+  function actualizarPreviews(){
+    const crudo = nombreInput.value.trim();
+    const nombre = crudo ? crudo.charAt(0).toUpperCase() + crudo.slice(1) : '';
+    previews.forEach(p=>{
+      if(!nombre){ p.classList.remove('visible'); p.textContent = ''; return; }
+      p.textContent = fraseParaCategoria(p.dataset.categoria, nombre);
+      p.classList.add('visible');
+    });
+  }
+  nombreInput.addEventListener('input', actualizarPreviews);
+})();
 
 // --- Barra de filtros: un chip por categoria, salta a la seccion ---
 (function(){
