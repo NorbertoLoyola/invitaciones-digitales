@@ -176,6 +176,30 @@ A diferencia de invitio.events (que bloquea la entrada a la galería con una pre
 - Al tipear, un listener `input` recorre las ~17 cards y les asigna una frase corta generada por categoría (`fraseParaCategoria`, un `switch` con una frase por categoría del `CATALOGO` — ej. "Bodas" → "{Nombre} se casa 💍", "15 años" → "Los 15 de {Nombre} 🎉"), capitalizando la primera letra automáticamente. Si el campo queda vacío, todas las previews vuelven a ocultarse.
 - Verificado en vivo con servidor local + `claude-in-chrome`: tipeando "valentina" aparece "Valentina se casa 💍" / "Los 15 de Valentina 🎉" / "¡Valentina cumple años! 🎂" en las cards correspondientes, en tiempo real y sin recargar; al vaciar el campo, vuelve limpio. Sin errores de consola.
 
+### Patrón nuevo: el nombre viaja hasta la plantilla real (?nombre=... en "Ver ejemplo")
+
+A pedido del usuario ("¿no sería bueno que viaje cuando quiera ver la vista previa del template?") — la personalización del catálogo no se queda solo en la card, sigue hasta el template real cuando se toca "Ver ejemplo".
+
+- El botón "Ver ejemplo" de cada card guarda su URL base en `data-base-href` y el link `href` se actualiza en vivo (misma función `actualizarPreviews()` del catálogo): si hay nombre tipeado, se le agrega `?nombre=<valor codificado>`; si no, vuelve a la URL base.
+- Cada uno de los 16 templates que tienen un campo de nombre individual en su `CONFIG` (todos menos `egresados-secundaria/birrete`, que es la fiesta de toda una promoción y no tiene nombre propio) trae, justo después del cierre del objeto `CONFIG` y antes del comentario "Registro de RSVP", un override chico:
+  ```js
+  (function(){
+    const nombre = new URLSearchParams(location.search).get('nombre');
+    if(!nombre) return;
+    if(CONFIG.mensajeFirma === CONFIG.<campo>) CONFIG.mensajeFirma = nombre;
+    CONFIG.<campo> = nombre;
+  })();
+  ```
+- El nombre del campo (`<campo>`) varía según la categoría — se investigó por Grep el `CONFIG` real de los 17 templates antes de tocar nada, y quedó así:
+  - `nombre`: 15 años, cumpleaños infantil (las 5 subcategorías), bautismo, primera comunión, cumpleaños de adultos.
+  - `nombreUno`: bodas (ambos subestilos) y aniversario — se personaliza solo el primer nombre, el segundo se deja con el dato demo (para dos novios reales, se cargan ambos a mano al momento de la entrega).
+  - `nombreMama`: baby shower (ambas variantes).
+  - `novia`: despedida de soltera.
+  - `alumno`: egresados de jardín/primaria.
+  - Sin campo (no personalizable por esta vía): egresados de secundaria/universidad.
+- El chequeo `if(CONFIG.mensajeFirma === CONFIG.<campo>)` evita pisar firmas genéricas tipo "Con cariño, Mamá y Papá" (cumpleaños infantil, primera comunión, bautismo) — solo reemplaza la firma cuando es una copia exacta del nombre demo (quince, cumpleaños de adultos, baby shower/reveal, despedida de soltera, egresados/primaria, o el primer nombre en bodas/aniversario cuando corresponde).
+- Verificado en vivo: `?nombre=Delfina` en `quince` reemplaza tanto el nombre del hero como la firma del mensaje; `?nombre=camila` en `bodas/rustico` deja "camila & Tomás" (segundo nombre intacto); sin el parámetro, cada template sigue mostrando su dato demo de siempre. Sin errores de consola en ningún caso.
+
 ## Próximo paso
 
 Las categorías madre tienen al menos un template generado. Pendiente:

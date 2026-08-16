@@ -282,6 +282,14 @@ const CONFIG = {
   footerNota: "Gracias por sumarte a esta misión.",
 };
 
+// --- Personalización desde el catálogo (?nombre=... en la URL de "Ver ejemplo") ---
+(function(){
+  const nombre = new URLSearchParams(location.search).get('nombre');
+  if(!nombre) return;
+  if(CONFIG.mensajeFirma === CONFIG.nombre) CONFIG.mensajeFirma = nombre;
+  CONFIG.nombre = nombre;
+})();
+
 // --- Registro de RSVP (Fase 2 del plan comercial: Google Sheet + Apps Script) ---
 const RSVP_LOG_URL = ""; // catalogo demo: vacio a proposito hasta Fase 4 (repo de entregas separado) - ver PLAN-COMERCIAL.md
 function registrarRSVP(datos){

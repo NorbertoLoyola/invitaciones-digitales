@@ -505,7 +505,7 @@ CATALOGO.forEach(cat=>{
         <p>${item.desc}</p>
       </div>
       <div class="card-ctas">
-        <a class="btn outline" href="${item.href}" target="_blank" rel="noopener">Ver ejemplo</a>
+        <a class="btn outline card-ver-ejemplo" data-base-href="${item.href}" href="${item.href}" target="_blank" rel="noopener">Ver ejemplo</a>
         <a class="btn fill" href="${elegirHref}" target="_blank" rel="noopener">Elegir este estilo</a>
       </div>
     `;
@@ -537,6 +537,7 @@ CATALOGO.forEach(cat=>{
 
   const nombreInput = document.getElementById('nombre-input');
   const previews = Array.from(document.querySelectorAll('.card-preview'));
+  const verEjemplos = Array.from(document.querySelectorAll('.card-ver-ejemplo'));
 
   function actualizarPreviews(){
     const crudo = nombreInput.value.trim();
@@ -545,6 +546,13 @@ CATALOGO.forEach(cat=>{
       if(!nombre){ p.classList.remove('visible'); p.textContent = ''; return; }
       p.textContent = fraseParaCategoria(p.dataset.categoria, nombre);
       p.classList.add('visible');
+    });
+    // El nombre viaja a la plantilla real via ?nombre=... — cada template
+    // lo lee y lo aplica a su propio CONFIG antes de renderizar (ver
+    // CONTEXTO.md, patrón "personalización instantánea").
+    verEjemplos.forEach(a=>{
+      const base = a.dataset.baseHref;
+      a.href = nombre ? `${base}?nombre=${encodeURIComponent(nombre)}` : base;
     });
   }
   nombreInput.addEventListener('input', actualizarPreviews);
