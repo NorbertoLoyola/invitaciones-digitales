@@ -193,7 +193,38 @@
 
   main{ position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:0 24px 100px; scroll-margin-top:64px; }
 
-  .categoria{ margin-top:60px; }
+  /* ---------- Barra de filtros: salto rapido por categoria ---------- */
+  .filter-bar{
+    position:sticky; top:53px; z-index:40;
+    background:rgba(251,243,236,0.92);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--linea);
+    padding:12px 0;
+    margin-bottom:8px;
+  }
+  .filter-scroll{
+    max-width:1100px; margin:0 auto; padding:0 24px;
+    display:flex; gap:8px; overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .filter-scroll::-webkit-scrollbar{ display:none; }
+  .filter-chip{
+    flex:0 0 auto;
+    display:inline-flex; align-items:center; gap:6px;
+    padding:8px 16px; border-radius:20px;
+    border:1.5px solid var(--linea);
+    background:#fff; color:var(--ciruela-suave);
+    font-size:.78rem; font-weight:600; text-decoration:none;
+    white-space:nowrap;
+    transition:border-color .2s ease, color .2s ease, background .2s ease;
+  }
+  .filter-chip .swatch-dot{ width:8px; height:8px; border-radius:50%; background:var(--chip-swatch); display:inline-block; }
+  .filter-chip:hover{ border-color:var(--terracota); color:var(--terracota-osc); }
+  .filter-chip.activo{ border-color:var(--terracota); background:var(--terracota); color:#fff; }
+  .filter-chip.activo .swatch-dot{ background:#fff; }
+
+  .categoria{ margin-top:60px; scroll-margin-top:118px; }
   .categoria-head{ display:flex; align-items:baseline; justify-content:space-between; gap:14px; margin-bottom:22px; }
   .categoria-head h2{ font-size:1.55rem; }
   .categoria-head span{ font-size:.82rem; color:var(--ciruela-suave); white-space:nowrap; }
@@ -312,6 +343,10 @@
   </div>
 </section>
 
+<div class="filter-bar">
+  <div class="filter-scroll" id="filterScroll"></div>
+</div>
+
 <main id="catalogo"></main>
 
 <footer>
@@ -405,10 +440,17 @@ const CATALOGO = [
   ]},
 ];
 
+function slug(texto){
+  return texto.toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '') // saca acentos
+    .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
 const main = document.getElementById('catalogo');
 CATALOGO.forEach(cat=>{
   const section = document.createElement('section');
   section.className = 'categoria';
+  section.id = 'cat-' + slug(cat.categoria);
 
   const head = document.createElement('div');
   head.className = 'categoria-head';
@@ -444,6 +486,44 @@ CATALOGO.forEach(cat=>{
   section.appendChild(grid);
   main.appendChild(section);
 });
+
+// --- Barra de filtros: un chip por categoria, salta a la seccion ---
+(function(){
+  const scrollBox = document.getElementById('filterScroll');
+  CATALOGO.forEach(cat=>{
+    const id = 'cat-' + slug(cat.categoria);
+    const chip = document.createElement('a');
+    chip.className = 'filter-chip';
+    chip.href = '#' + id;
+    chip.dataset.target = id;
+    chip.style.setProperty('--chip-swatch', cat.items[0].swatch);
+    chip.innerHTML = `<span class="swatch-dot"></span>${cat.categoria}`;
+    scrollBox.appendChild(chip);
+  });
+
+  // Resalta el chip de la categoria que se esta viendo, y lo mantiene visible en el scroll horizontal
+  const chips = Array.from(scrollBox.children);
+  const secciones = Array.from(document.querySelectorAll('.categoria'));
+  const catObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting) return;
+      const chip = chips.find(c => c.dataset.target === entry.target.id);
+      if(!chip) return;
+      chips.forEach(c=>c.classList.remove('activo'));
+      chip.classList.add('activo');
+      chip.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+    });
+  }, { rootMargin: '-15% 0px -75% 0px' }); // franja angosta justo debajo del nav+chips, no el medio de la pantalla (evita saltear secciones cortas)
+  secciones.forEach(s=>catObserver.observe(s));
+
+  // Si se entra con un link directo tipo index.html#cat-bodas, el salto nativo
+  // del navegador ya paso (fallo, porque las secciones recien se crearon arriba) -
+  // se reintenta a mano una vez que el DOM esta listo.
+  if(location.hash){
+    const target = document.querySelector(location.hash);
+    if(target) target.scrollIntoView({ behavior:'instant' });
+  }
+})();
 
 // --- Hero: celular con capturas reales de templates, con scroll simulado de verdad ---
 (function(){
