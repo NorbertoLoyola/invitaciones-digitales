@@ -1,10 +1,10 @@
-# Late — invitaciones digitales (producto de venta)
+# Lazo — invitaciones digitales (producto de venta)
 
 Proyecto propio (no relacionado con A. D. Barbieri / TOTVS Protheus): convertir la invitación digital hecha para el cumpleaños de Aitana en un producto de invitaciones para vender, con varios templates por tipo de evento, usando un motor de plantillas (config por cliente) en vez de copiar el HTML entero cada vez.
 
 ## Marca y negocio (decidido 2026-08-11, ver `PLAN-COMERCIAL.md` para el detalle completo)
 
-- **Nombre**: Late. Handle de Instagram sugerido: `@late.invitaciones`.
+- **Nombre**: Lazo (rebrandeado el 2026-08-20 — el nombre original era "Late"; ver sección "Rebrand" más abajo). Handle de Instagram sugerido: `@lazo.invitaciones` (no verificado en vivo todavía — chequear disponibilidad antes de usarlo en material impreso o pago).
 - **Quién lo ofrece**: Norberto y su mujer (corrige una mención anterior en este documento que decía "la prima" — esa fue una conversación previa, el dato actualizado es este).
 - **Precio inicial (beta)**: $20.000–$25.000, por debajo de la referencia de mercado hasta tener casos reales.
 - **Estrategia de lanzamiento**: validar el flujo operativo gratis con algún cumpleaños infantil de un conocido primero; lanzamiento comercial real con Bodas o 15 años después.
@@ -154,7 +154,7 @@ Scaffolding sumado a los **17 templates del catálogo completo**, anclado en el 
 - **Embed**: cualquier URL de `open.spotify.com/...` se vuelve reproducible insertando `/embed` después del dominio: `open.spotify.com/embed/playlist/...`. Truco oficial de Spotify, gratis, sin API key.
 - La sección (`#playlist-section` + `#playlist-divider`) arranca oculta (`display:none`) y solo se muestra si `CONFIG.spotifyUrl` está definida — así ningún template rompe visualmente mientras no haya una URL real cargada.
 - `CONFIG.spotifyUrl` **no se agregó como campo vacío** a ningún `CONFIG` todavía — se va a sumar con la URL real directamente cuando existan las playlists curadas, evitando una pasada de edición redundante.
-- Pregunta correspondiente ya sumada al skill `entregar-invitacion`: se le pregunta al cliente si tiene playlist propia (opcional); si no manda nada, usar la curada por Late para esa categoría (ver más abajo).
+- Pregunta correspondiente ya sumada al skill `entregar-invitacion`: se le pregunta al cliente si tiene playlist propia (opcional); si no manda nada, usar la curada por Lazo para esa categoría (ver más abajo).
 - Verificado en vivo con servidor local + `claude-in-chrome` en 2 templates (quince y cumple-infantil 10-12 años): sin `spotifyUrl`, la sección queda oculta y no hay errores de consola; forzando un `spotifyUrl` de prueba, el iframe se arma con la URL `/embed/` correcta y el widget de Spotify se ve integrado con la paleta de cada template.
 
 **Pendiente (pausado 2026-08-16 a pedido del usuario)**: curar las playlists reales por categoría (una por categoría del catálogo, para la demo y como fallback en entregas reales). Esto requiere buscar/armar playlists en una cuenta de Spotify real — Claude no puede loguearse ni manejar credenciales de terceros bajo ninguna circunstancia, así que esta parte necesita participación activa del usuario (loguearse él mismo y armar las playlists, o pedir una lista de temas sugeridos para armarlas por su cuenta). El usuario todavía no tiene cuenta de Spotify — retomar cuando la tenga y esté en la compu (venía trabajando desde el celular).
@@ -269,3 +269,19 @@ Los 13 templates con sección de galería (todos menos `aniversario/carrusel`, q
 - Para despedida de soltera: se descartó una foto con un hombre en primer plano (evento típicamente solo de mujeres) y otra de Año Nuevo mal indexada como "bachelorette".
 
 Este es el mismo criterio de cuidado con copyright que ya se había aplicado al caso "dulce" (Minnie Mouse) documentado más arriba — se mantiene como estándar para cualquier foto que se sume al catálogo público de ahora en más.
+
+## Rebrand — Late pasa a llamarse Lazo (2026-08-20)
+
+Decisión del usuario: el nombre "Late" se reemplaza por **Lazo**. Motivo — quería algo que hablara del producto en sí (no del genérico "invitaciones digitales" que usa toda la competencia) y que fuera corto para logo. "Lazo" tiene doble lectura: el moño que decora una tarjeta de invitación, y el vínculo entre las personas que se reúnen en el evento.
+
+**Aplicado en esta sesión:**
+- Catálogo (`index.html`): `<title>`, meta `og:site_name`/`og:title`, `nav-brand` y el `wordmark` del hero — ahora dice "Lazo" seguido de "invitaciones digitales" como subtítulo (antes era una frase más larga: "invitaciones digitales para cada momento especial").
+- Los 17 templates del catálogo (`templates/**/index.html`) suman un pie nuevo, chico y discreto (`opacity:.45`, no interfiere con la paleta de cada template): *"Desarrollado por Lazo invitaciones digitales"*. Antes ningún template tenía crédito visible.
+- Comentarios internos de código que mencionaban "Late" (playlist curada por categoría) actualizados a "Lazo" en los 3 templates que la usan (`quince`, `bodas/rustico`, `cumple-infantil/0-2-anos/dulce`).
+- Skill `entregar-invitacion` (`.claude/skills/entregar-invitacion/SKILL.md`) actualizada: descripción, dominio y menciones de marca ahora dicen "Lazo".
+
+**Explícitamente NO tocado — pendiente de decisión del usuario:**
+- La planilla real de Google Sheets ("Late — RSVP") y el Apps Script ya desplegado en producción (Fase 2) siguen literalmente named "Late" — el código del script crea hojas como `'Late RSVP — ' + evento`. **Decisión explícita del usuario (2026-08-20): queda pausado, no renombrar por ahora.** No es solo posponer un detalle estético — el usuario está evaluando si más adelante conviene dar acceso a salones de fiesta para que armen ellos mismos las invitaciones de sus clientes (ver idea anotada en `PLAN-COMERCIAL.md`, Fase 6), lo que probablemente signifique rehacer el backend de RSVP con roles/multi-usuario en vez de solo renombrarlo — tiene sentido esperar a esa definición antes de tocar la planilla actual. Ver nota en `rsvp-apps-script.md` y en el skill `entregar-invitacion`.
+- El handle de Instagram `@lazo.invitaciones` es una sugerencia, no se verificó disponibilidad en vivo (la extensión de Chrome no estaba conectada al momento del rebrand).
+- El favicon (💓, elegido porque "Late" jugaba con "late el corazón") no se cambió — un moño (🎀) encajaría más con "Lazo" si se quiere ese ajuste, pero no se pidió.
+- El nombre del repo en GitHub (`invitaciones-digitales`) y del repo de entregas (`invitaciones-entregas`) no se tocó — son identificadores técnicos, no la marca visible.

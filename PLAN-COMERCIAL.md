@@ -12,7 +12,7 @@ Nada de esto se programa — son decisiones de negocio que todo lo demás depend
 
 - [x] **Estrategia de categoría, en dos pasos.** No hay contacto cercano todavía para una boda/15 gratis, así que: (1) validar todo el flujo operativo (Fases 1-4) gratis con **algún cumpleaños infantil** de un conocido — bajo riesgo social, fácil de conseguir rápido; (2) una vez probado el flujo, **lanzamiento comercial con Bodas o 15 años** (mayor ticket, $30-40k de referencia de mercado). El resto de las categorías quedan en el catálogo como "también hacemos esto".
 - [x] **Precio inicial: $20.000–$25.000** para las primeras ventas beta, por debajo de la referencia de mercado mientras no hay casos reales — sube una vez que haya 3-5 entregas reales y testimonios de verdad.
-- [x] **Marca: "Late"** — corto, cálido, evoca "late el corazón / late la fiesta" sin sonar frío ni over-emocional. Handle de Instagram sugerido: **@late.invitaciones** (con la palabra clave, para aparecer en búsquedas — "Late" solo es muy genérico).
+- [x] **Marca: "Late"** — corto, cálido, evoca "late el corazón / late la fiesta" sin sonar frío ni over-emocional. Handle de Instagram sugerido: **@late.invitaciones** (con la palabra clave, para aparecer en búsquedas — "Late" solo es muy genérico). **Actualización 2026-08-20: renombrada a "Lazo"** — ver sección "Rebrand" en `CONTEXTO.md` para el detalle completo y qué queda pendiente en Google (planilla/Apps Script todavía dicen "Late").
 - [x] **Quién es la cara del negocio: Norberto y su mujer** (no la prima, como se había mencionado en una conversación anterior — corregido en `CONTEXTO.md`).
 - [ ] **Flujo de entrega manual, por escrito** — ver sección siguiente.
 
@@ -98,6 +98,7 @@ Todo lo de arriba es preparación. Esto es lo que realmente mueve la aguja:
 
 - [ ] Instagram no alcanza solo. Este mercado se mueve por referidos: **salones de fiesta, organizadores de eventos, fotógrafos de bodas/15, catering**. Un acuerdo de comisión (ej. 10-15% por venta referida) con 2-3 de esos actores locales trae más volumen que postear sin seguidores.
 - [ ] Contenido de Instagram recién tiene sentido *después* de tener el catálogo con precio, marca, y al menos una entrega real para mostrar — publicar antes es gastar el primer impacto en algo incompleto.
+- **Idea a futuro (2026-08-20, sin desarrollar todavía)**: si el acuerdo con salones de fiesta avanza más allá de la comisión por referido, darles acceso propio para que ellos mismos arme la invitación según lo que elija su cliente (en vez de que Norberto/su mujer lo hagan a mano por cada salón). Esto es directamente una extensión del `/panel` multi-usuario del plan de automatización de la Fase 7 (ver `~/.claude/plans/flickering-forging-flamingo.md`) — un salón sería otro tipo de usuario con acceso limitado a su propio set de eventos, no un concepto nuevo aparte. No evaluar como proyecto separado si se retoma la Fase 7: extender el mismo diseño de Auth/roles de Supabase.
 
 ---
 

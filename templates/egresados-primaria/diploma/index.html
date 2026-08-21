@@ -405,7 +405,7 @@ document.getElementById('map-frame').src = `https://www.google.com/maps?q=${enco
   document.getElementById('calendar-btn').href = `https://calendar.google.com/calendar/render?${params.toString()}`;
 })();
 
-// --- Playlist de Spotify (opcional - si el cliente no manda la suya, usar la curada por Late para esta categoria) ---
+// --- Playlist de Spotify (opcional - si el cliente no manda la suya, usar la curada por Lazo para esta categoria) ---
 if (CONFIG.spotifyUrl) {
   document.getElementById('playlist-divider').style.display = '';
   document.getElementById('playlist-section').style.display = '';
@@ -582,5 +582,6 @@ document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
   ctaObserver.observe(rsvp);
 })();
 </script>
+<div style="text-align:center;padding:18px 16px 26px;font-size:.72rem;letter-spacing:.02em;opacity:.45">Desarrollado por <strong>Lazo</strong> invitaciones digitales</div>
 </body>
 </html>
